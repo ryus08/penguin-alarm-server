@@ -1,0 +1,413 @@
+swagger: '2.0'
+info:
+  title: Penguin Server
+  description: Polls different sources to power the penguin alarm
+  version: '1'
+  termsOfService: Tier 1
+  contact:
+    name: Fulfillment Networking (FuN)
+    email: ctfulfillmentnetworkingsquad@cimpress.com
+securityDefinitions:
+  auth0:
+    type: oauth2
+    description: Authentication with Auth0
+    flow: implicit
+    authorizationUrl: https://cimpress.auth0.com/authorize
+    scopes: {}
+security:
+  - auth0: []
+tags:
+  - name: Example
+    description: An example GET API
+  - name: Healthcheck
+    description: API to determine the health of the service
+schemes:
+  - http
+  - https
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  /models:
+    post:
+      parameters:
+      - in: body
+        name: body
+        schema:
+          $ref: "#/definitions/TrainingDataRequirements"
+      responses:
+        '200':
+          description: the parameters to use when making a new model
+          schema:
+            type: string
+    get:
+      responses:
+        '200':
+          description: the models available
+          schema:
+            type: string
+  /models/active/{id}:
+    put:
+      parameters:
+      - in: path
+        name: id
+        description: The id of the model
+        required: true
+        type: string
+      responses:
+        '204':
+          description: Won't return anything, just activate the model
+          schema:
+            type: string
+  /predictions:
+    put:
+      summary: updates any predictions in batch-style
+      responses:
+        '200':
+          description: Nothing really
+          schema:
+            type: string
+  /predictions/{project_id}/{iid}:
+    get:
+      summary: gets a prediction for the quality of the merge request
+      parameters:
+      - in: path
+        name: project_id
+        description: The identifier of the project
+        required: true
+        type: string
+      - in: path
+        name: iid
+        description: the identifier of the merge request within the project
+        required: true
+        type: string
+      responses:
+        '200':
+          description: the prediction
+          schema:
+            type: string
+  /{configName}/activity/comments:
+    get:
+      summary: gets the activity for the team
+      parameters:
+      - in: path
+        name: configName
+        description: The name of the configuration to get merges from
+        required: true
+        type: string
+      responses:
+        '200':
+          description: the activity
+          schema:
+            type: string
+  /{configName}/activity/team:
+    get:
+      summary: gets the historical merge rates
+      parameters:
+      - in: path
+        name: configName
+        description: The name of the configuration to get merges from
+        required: true
+        type: string
+      responses:
+        '200':
+          description: the activity
+          schema:
+            type: string
+  /{configName}/opinions:
+    get:
+      summary: get the user's opinions about merge requests
+      parameters:
+      - in: path
+        name: configName
+        description: The name of the configuration to get merges from
+        required: true
+        type: string
+      responses:
+        '200':
+          description: the activity
+          schema:
+            type: string
+  /{configName}/opinions/{merge_id}:
+    put:
+      summary: lets the user state an opinion on a merge request's quality
+      parameters:
+      - in: path
+        name: configName
+        description: The name of the configuration to get merges from
+        required: true
+        type: string
+      - in: path
+        name: merge_id
+        description: The ID of the merge request
+        required: true
+        type: string
+      - in: body
+        name: body
+        schema:
+          $ref: "#/definitions/opinion"
+      responses:
+          '200':
+            description: the activity
+            schema:
+              type: string
+  /{configName}/activity/merges:
+    get:
+      summary: gets the activity for the team
+      parameters:
+      - in: path
+        name: configName
+        description: The name of the configuration to get merges from
+        required: true
+        type: string
+      responses:
+        '200':
+          description: the activity
+          schema:
+            type: string
+  /{configName}/activity/approvals:
+    get:
+      summary: gets the activity for the team
+      parameters:
+      - in: path
+        name: configName
+        description: The name of the configuration to get merges from
+        required: true
+        type: string
+      responses:
+        '200':
+          description: the activity
+          schema:
+            type: string
+  /{configName}/projectEffort:
+    get:
+      summary: gets the effort spent on each project
+      parameters:
+      - in: path
+        name: configName
+        description: The name of the configuration to get merges from
+        required: true
+        type: string
+      responses:
+        '200':
+          description: the effort
+          schema:
+            type: string
+  /{configName}/achievements:
+    get:
+      summary: gets the activity for the team
+      parameters:
+      - in: path
+        name: configName
+        description: The name of the configuration to get merges from
+        required: true
+        type: string
+      responses:
+        '200':
+          description: the activity
+          schema:
+            type: string
+  /{configName}/merges:
+    get:
+      summary: gets the active merges for a configuration
+      parameters:
+      - in: path
+        name: configName
+        description: The name of the configuration to get merges from
+        required: true
+        type: string
+      responses:
+        '200':
+          description: the merges
+          schema:
+            type: string
+  /{configName}/merges/users/{gitlabUsername}:
+    get:
+      summary: gets the active merges as viewed by a particular user
+      parameters:
+      - in: path
+        name: configName
+        description: The name of the configuration to get merges from
+        required: true
+        type: string
+      - in: path
+        name: gitlabUsername
+        description: the user's gitlab name
+        required: true
+        type: string
+      responses:
+        '200':
+          description: the merges
+          schema:
+            type: string
+
+  /{configName}/deployments:
+    get:
+      summary: gets the most recent deployments
+      parameters:
+      - in: path
+        name: configName
+        description: The name of the configuration to get merges from
+        required: true
+        type: string
+      responses:
+        '200':
+          description: the merges
+          schema:
+            type: string
+  /{configName}/deploymenthistory:
+    get:
+      summary: gets the most recent deployments
+      parameters:
+      - in: path
+        name: configName
+        description: The name of the configuration to get merges from
+        required: true
+        type: string
+      responses:
+        '200':
+          description: the merges
+          schema:
+            type: string
+  /groups:
+    get:
+      summary: searches for a group id
+      parameters:
+        - in: query
+          name: name
+          description: The partial string to match
+          type: string
+          required: true
+      responses:
+        '200':
+          description: possible matches
+  /configurations:
+    get:
+      summary: gets all the configurations available
+      responses:
+        '200':
+          description: the list of configurations
+  /configurations/{configName}:
+    delete:
+      summary: deletes your configuration
+      parameters:
+      - in: path
+        name: configName
+        description: The name of the configuration to get merges from
+        required: true
+        type: string
+      responses:
+        '204':
+          description: Nothing if it is successful
+    put:
+      summary: sets your configuration
+      parameters:
+      - in: path
+        name: configName
+        description: The name of the configuration to get merges from
+        required: true
+        type: string
+      - in: body
+        name: body
+        schema:
+          $ref: "#/definitions/config"
+      responses:
+        '200':
+          description: the configuration
+          schema:
+            $ref: "#/definitions/config"
+    get:
+      summary: gets the active merges for a configuration
+      parameters:
+      - in: path
+        name: configName
+        description: The name of the configuration to get merges from
+        required: true
+        type: string
+      responses:
+        '200':
+          description: the configuration
+          schema:
+            type: string
+  /livecheck:
+    head:
+      tags:
+        - Healthcheck
+      summary: Performs a healthcheck on the service
+      responses:
+        '200':
+          description: The service is healthy
+          schema:
+            type: string
+definitions:
+  opinion:
+    required:
+      - project_id
+      - iid
+      - sick
+    type: object
+    properties:
+      project_id:
+        type: number
+      iid:
+        type: number
+      sick:
+        type: string
+        enum: [good, bad, neither]
+  config:
+    type: object
+    properties:
+      newrelic:
+        $ref: "#/definitions/NewRelic"
+      gitlab:
+        $ref: "#/definitions/GitLab"
+      slideshow:
+        $ref: "#/definitions/Slideshow"
+  TrainingDataRequirements:
+    type: object
+    properties:
+      minimumAgreementPercentage:
+        description: The minimum percentage for the rating to be considered
+        type: number
+        default: 0.75
+      minimumSupport:
+        description: the minimum number of ratings that must agree for the rating to be considered
+        type: number
+        default: 1
+  NewRelic:
+    type: object
+    properties:
+      policy:
+        description: "DEPRECATED: Use policies instead"
+        type: string
+      policies:
+        type: array
+        items:
+          type: string
+      refreshRate:
+        type: number
+        default: 15000
+
+  GitLab:
+    type: object
+    required:
+      - groupIds
+    properties:
+      alwaysShowLeaders:
+        type: boolean
+      groupIds:
+        type: array
+        items:
+          type: number
+      includeWorkInProgressMergeRequests:
+        type: boolean
+        default: false
+
+  Slideshow:
+    type: object
+    properties:
+      youtube:
+        type: array
+        items:
+          type: string

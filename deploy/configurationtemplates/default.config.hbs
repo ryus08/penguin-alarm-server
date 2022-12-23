@@ -1,0 +1,29 @@
+SolutionStack: 64bit Amazon Linux 2017.03 v2.7.5 running Multi-container Docker 17.03.2-ce (Generic)
+OptionSettings:
+  aws:elasticbeanstalk:application:environment:
+    NODE_ENV: production
+    NEW_RELIC_APP_NAME: penguinserver (aws-{{environment}})
+    NEW_RELIC_AGENT_ENABLED: true
+    NEW_RELIC_HOME: /etc/{{packageName}}/
+    ACTIVE_MODEL: ml-f7511264-fec8-40f5-be78-7475aa7cf3f7
+  aws:elasticbeanstalk:command:
+    DeploymentPolicy: Rolling
+    BatchSize: 34
+  aws:autoscaling:launchconfiguration:
+    InstanceType: t2.small
+  aws:autoscaling:trigger:
+    MeasureName: CPUUtilization
+    Statistic: Average
+    Unit: Percent
+    Period: 1
+    BreachDuration: 1
+    LowerBreachScaleIncrement: -1
+    LowerThreshold: 20
+    UpperBreachScaleIncrement: 1
+    UpperThreshold: 50
+  aws:elasticbeanstalk:managedactions:platformupdate:
+   {{!-- Do not turn minor upgrades and do not upgrade to v2.27 without also swapping to the CWLogs collector instead of the sumo logging driver (GCD 10.10 plus the paved path for it).
+   Be weary of using the file logger to feed CWLogs, as the file rotation can conflict with CWLogs rotation, either not rotating (and filling the disk) 
+   Or rotating out-of turn (causing logs not to be sent). The console log should be able to get the logs to the place CWLogs can then pick up and send if configured right. --}}
+    UpdateLevel: patch
+    InstanceRefreshEnabled: false

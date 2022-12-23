@@ -1,0 +1,9 @@
+logging:
+  path: penguinserver.log
+
+cachingDisabled: true
+gitlabToken: do not commit
+selfUrl: http://localhost:8080
+pollRate: 120000
+jitterPercent: "0.50"
+activeModel: ml-K1cm2cPPAz2

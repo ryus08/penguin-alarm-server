@@ -1,0 +1,1 @@
+FROM 732882016815.dkr.ecr.eu-west-1.amazonaws.com/belt-node12-dockerimage:latest

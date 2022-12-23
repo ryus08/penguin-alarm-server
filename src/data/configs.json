@@ -1,0 +1,25 @@
+{
+  "newrelic": {
+    "policy": "Fulfiller Integration Squad policy",
+    "refreshRate": 10000
+  },
+  "gitlab": {
+    "groupIds": [
+      121,
+      338,
+      388,
+      169,
+      394
+    ],
+    "alwaysShowLeaders": true
+  },
+  "slideshow": {
+    "youtube": [
+      "t2_W9OZcoTE",
+      "m9VO7X_q9nw",
+      "9vlavTW0rn4",
+      "Mk9gQcHueeE"
+    ],
+    "rate": 120000
+  }
+}

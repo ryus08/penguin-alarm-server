@@ -1,0 +1,13 @@
+image: public.ecr.aws/docker/library/node:16
+
+include:
+  - project: Cimpress-Technology/product-catalog/infrastructure/gitlab-templates
+    file:
+      - buildcomponents/rules.yml
+      - buildcomponents/runtimes.yml
+      - buildcomponents/application.yml
+      - buildcomponents/assumerole.yml
+      - gcd/gcd.yml
+
+variables:
+  ROLE_ARN: arn:aws:iam::732882016815:role/GitlabBuild

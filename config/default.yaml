@@ -1,0 +1,24 @@
+# See documenation/secrets.md for information on
+# easily storing and decrypting secret material
+# in this configuration file
+
+port: 8080
+name: Penguin Server
+logging:
+  level: warn
+  appName: Penguin Server
+  team: Fulfiller Integration Squad
+  contact: FulfillerIntegration@cimpress.com
+  loggingTransports:
+   - transport: console
+     options:
+       stringify: true
+       json: true
+auth0:
+  domain: cimpress.auth0.com
+  resourceServer: https://api.cimpress.io/
+swagger:
+  enableValidation: true
+  enableRedirectRoot: true
+cors:
+  origin: "*"

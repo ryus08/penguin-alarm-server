@@ -1,0 +1,27 @@
+# Node dependency directory
+node_modules
+
+# Compiled binary addons
+# http://nodejs.org/api/addons.html
+build/Release
+output
+
+# Logs
+logs
+*.log
+*.log.*
+
+# Runtime data
+pids
+*.pid
+*.seed
+
+# Grunt intermediate storage
+# http://gruntjs.com/creating-plugins#storing-task-files
+.grunt
+
+# Coverage directory used by tools like istanbul
+coverage
+
+# New Relic local configuration
+newrelic.js

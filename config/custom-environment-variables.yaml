@@ -1,0 +1,5 @@
+gitlabToken: GITLAB_TOKEN
+selfUrl: SELF_URL
+pollRate: POLL_RATE
+jitterPercent: JITTER_PERCENT
+activeModel: ACTIVE_MODEL
