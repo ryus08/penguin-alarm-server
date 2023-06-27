@@ -42,6 +42,7 @@ module.exports = ({ app }) => {
       );
     };
 
+    // This doesn't seem used, and app.locals.reduceMergeToStats doesn't seem defined.
     app.locals.getMergeStats = ({ project_id, iid }) => {
       const merge = groupData.getMerge({ project_id, iid });
 

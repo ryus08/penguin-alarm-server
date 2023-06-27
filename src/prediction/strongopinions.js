@@ -2,10 +2,13 @@ const _groupBy = require("lodash.groupby");
 const _maxBy = require("lodash.maxby");
 const _map = require("lodash.map");
 const _filter = require("lodash.filter");
-const dynamoClient = require("../data/dynamoclient");
 
-module.exports = ({ minimumAgreementPct = 0.75, minimumSupport = 1 }) =>
-  dynamoClient.getAllOpinions().then(opinions => {
+module.exports = ({
+  minimumAgreementPct = 0.75,
+  minimumSupport = 1,
+  allOpinions
+}) =>
+  Promise.resolve(allOpinions).then(opinions => {
     // pull all the data together by merge request
     const grouped = _groupBy(opinions, "value.mergeId");
 

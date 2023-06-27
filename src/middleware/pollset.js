@@ -2,7 +2,6 @@ const mergeParticipationPoller = require("../pollers/mergeparticipationpoller");
 const Pollset = require("../pollset");
 const pollinstance = require("../pollinstance");
 const configs = require("../data/configs");
-const dynamoClient = require("../data/dynamoclient");
 
 module.exports = ({ app, config }) => {
   const isActive = groupId => !app.locals.pollset.shutdown({ groupId });
@@ -28,7 +27,7 @@ module.exports = ({ app, config }) => {
 
   const pollSet = new Pollset({ pollFn });
 
-  dynamoClient.getConfigs().then(results => {
+  app.locals.configDAO.getConfigs().then(results => {
     results.forEach(result => {
       configs.put({ name: result.name, data: result.config });
     });

@@ -6,6 +6,9 @@ node_modules
 build/Release
 output
 
+# Local config which shouldn't be checked in. Good place for local secrets
+config/local.*
+
 # Logs
 logs
 *.log
