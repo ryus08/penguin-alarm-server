@@ -1,63 +1,47 @@
-require("newrelic");
-const { ExpressApp } = require("@cimpress-technology/belt");
+// require("newrelic"); TODO: Get configurable or document how to do this when installing/deploying.
+// Maybe just turn this into a package, so this line is just loading in the "real" importer.
+// Also "@cimpress-technology/newrelicmiddleware", so probably need to allow the caller to pass middleware
 const express = require("express");
-const newRelicMiddleware = require("@cimpress-technology/newrelicmiddleware");
-const beltErrorHandling = require("@cimpress-technology/belterrorhandling");
-const {
-  MIDDLEWARE_GROUPS
-} = require("@cimpress-technology/belt/src/middleware/defaultmiddlewarelist");
 const config = require("config");
+const cors = require("cors");
 const search = require("./routes/search");
 const queries = require("./routes/queries");
 const configData = require("./routes/configdata");
 const opinions = require("./routes/opinions");
 const predictions = require("./routes/predictions");
+const logger = require("./middleware/logger");
+const dataAccess = require("./middleware/dataAccess");
 const pollSet = require("./middleware/pollset");
 const getMerges = require("./middleware/getmerges");
-const internalOnly = require("./middleware/internalonly");
+// const internalOnly = require("./middleware/internalonly");
 const clientBuilder = require("./clients/clientbuilder");
 const opinionMw = require("./middleware/opinions");
 const mlConfig = require("./middleware/mlconfig");
 
-let expressApp;
+const app = express();
 
 if (require.main === module) {
-  expressApp = new ExpressApp({
-    config,
-    applicationMiddlewareList: [
-      {
-        priority: MIDDLEWARE_GROUPS.REQ_RES_LOGGING_TRACKING.start + 20,
-        name: "newRelicMiddleware",
-        middleware: newRelicMiddleware
-      },
-      {
-        priority: MIDDLEWARE_GROUPS.AUTHORIZATION.start + 20,
-        name: "InternalOnly",
-        middleware: internalOnly
-      },
-      { middleware: beltErrorHandling },
-      {
-        priority: 1,
-        name: "staticFiles",
-        middleware: ({ app }) => app.use(express.static("./src/public"))
-      },
-      { middleware: pollSet },
-      { middleware: getMerges },
-      { middleware: clientBuilder },
-      { middleware: mlConfig },
-      { middleware: opinionMw }
-    ],
-    routes: [search, queries, configData, opinions, predictions]
-  })
-    .start()
-    .then(server => {
-      // eslint-disable-next-line no-console
-      console.log(
-        `${config.name} at http://${server.address().address}:${
-          server.address().port
-        }`
-      );
-    });
+  app.locals.config = config;
+  app.use(cors());
+  app.use(express.json());
+  logger({ app });
+  // internalonly({ app });
+  dataAccess({ app, config });
+  pollSet({ app, config });
+  getMerges({ app, config });
+  clientBuilder({ app, config });
+  mlConfig({ app, config });
+  opinionMw({ app, config });
+  search({ app, config });
+  queries({ app, config });
+  configData({ app, config });
+  opinions({ app, config });
+  predictions({ app, config });
+  app.use(express.static("./src/public"));
+  app.listen(config.port, () => {
+    // eslint-disable-next-line no-console
+    console.log(`${config.name} at ${config.selfUrl}`);
+  });
 } else {
-  module.exports = { expressApp };
+  module.exports = { expressApp: app };
 }

@@ -14,7 +14,9 @@ const service = ({ app }) => {
   );
 
   app.post("/models", (req, res) =>
-    strongOpinions(req.body)
+    app.locals.opinionDAO
+      .getAllOpinions()
+      .then(allOpinions => strongOpinions(req.body, allOpinions))
       .then(merges =>
         app.locals.machineLearning.createModel({
           sourceData: merges,

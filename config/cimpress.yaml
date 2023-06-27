@@ -1,0 +1,15 @@
+# See documenation/secrets.md for information on
+# easily storing and decrypting secret material
+# in this configuration file
+
+logging:
+  level: warn
+  appName: Penguin Server
+  team: Fulfiller Integration Squad
+  contact: FulfillerIntegration@cimpress.com
+auth0:
+  domain: cimpress.auth0.com
+  resourceServer: https://api.cimpress.io/
+activeModel: ml-K1cm2cPPAz2
+data:
+  source: dynamo

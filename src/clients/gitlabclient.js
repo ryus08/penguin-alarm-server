@@ -8,17 +8,16 @@ const _max = require("lodash.max");
 const _forEach = require("lodash.foreach");
 const _get = require("lodash.get");
 
-const gitlab = "https://gitlab.com/api/v4/";
-
 class GitLabClient {
-  constructor({ token, projectCache }) {
+  constructor({ token, projectCache, gitlabUrl }) {
     this.token = token;
     this.projectCache = projectCache;
+    this.gitlabUrl = `${gitlabUrl}/api/v4/`;
   }
 
   async groupSearch({ name }) {
     const response = await rp(
-      `${gitlab}groups/?search=${name}&min_access_level=10&private_token=${this.token}`
+      `${this.gitlabUrl}groups/?search=${name}&min_access_level=10&private_token=${this.token}`
     );
 
     return JSON.parse(response);
@@ -30,7 +29,7 @@ class GitLabClient {
       groupId => {
         const options = {
           method: "GET",
-          uri: `${gitlab}groups/${groupId}?private_token=${this.token}`,
+          uri: `${this.gitlabUrl}groups/${groupId}?private_token=${this.token}`,
           resolveWithFullResponse: true
         };
         return this.projectCache.get(options, opts => {
@@ -52,13 +51,13 @@ class GitLabClient {
 
   getGroup({ groupId }) {
     return rp(
-      `${gitlab}groups/${groupId}?private_token=${this.token}`
+      `${this.gitlabUrl}groups/${groupId}?private_token=${this.token}`
     ).then(response => JSON.parse(response));
   }
 
   addNotes({ merge }) {
     return rp(
-      `${gitlab}projects/${merge.project_id}/merge_requests/${merge.iid}/notes?private_token=${this.token}`
+      `${this.gitlabUrl}projects/${merge.project_id}/merge_requests/${merge.iid}/notes?private_token=${this.token}`
     ).then(response => {
       const notes = JSON.parse(response);
       merge.notes = notes;
@@ -75,7 +74,7 @@ class GitLabClient {
     }
     const options = {
       method: "GET",
-      url: `${gitlab}projects/${merge.project_id}/merge_requests/${merge.iid}/notes?order_by=created_at&page=${pageNumber}&per_page=100&private_token=${this.token}`,
+      url: `${this.gitlabUrl}projects/${merge.project_id}/merge_requests/${merge.iid}/notes?order_by=created_at&page=${pageNumber}&per_page=100&private_token=${this.token}`,
       resolveWithFullResponse: true
     };
     return rp(options).then(response => {
@@ -103,7 +102,7 @@ class GitLabClient {
     return (
       P.resolve(
         rp(
-          `${gitlab}projects/${merge.project_id}/merge_requests/${merge.iid}/changes?private_token=${this.token}`
+          `${this.gitlabUrl}projects/${merge.project_id}/merge_requests/${merge.iid}/changes?private_token=${this.token}`
         )
       )
         .tap(response => {
@@ -125,7 +124,7 @@ class GitLabClient {
 
   addApprovers({ merge }) {
     return rp(
-      `${gitlab}projects/${merge.project_id}/merge_requests/${merge.iid}/approvals?private_token=${this.token}`
+      `${this.gitlabUrl}projects/${merge.project_id}/merge_requests/${merge.iid}/approvals?private_token=${this.token}`
     ).then(response => {
       const approvers = JSON.parse(response);
       merge.approvers = approvers;
@@ -154,7 +153,7 @@ class GitLabClient {
 
   getOpenMergeRequests({ projectId, projectName }) {
     return rp(
-      `${gitlab}projects/${projectId}/merge_requests?scope=all&state=opened&private_token=${this.token}`
+      `${this.gitlabUrl}projects/${projectId}/merge_requests?scope=all&state=opened&private_token=${this.token}`
     )
       .then(response => JSON.parse(response))
       .then(response => {
@@ -169,7 +168,9 @@ class GitLabClient {
     const d = new Date();
     d.setDate(d.getDate() - numberOfDays);
     return rp(
-      `${gitlab}projects/${projectId}/merge_requests?scope=all&created_after=${d.toJSON()}&private_token=${
+      `${
+        this.gitlabUrl
+      }projects/${projectId}/merge_requests?scope=all&created_after=${d.toJSON()}&private_token=${
         this.token
       }`
     )
@@ -185,7 +186,7 @@ class GitLabClient {
   getMergeRequest({ project_id, iid }) {
     return P.resolve(
       rp(
-        `${gitlab}projects/${project_id}/merge_requests/${iid}?private_token=${this.token}`
+        `${this.gitlabUrl}projects/${project_id}/merge_requests/${iid}?private_token=${this.token}`
       )
     )
       .then(response => JSON.parse(response))
@@ -196,7 +197,7 @@ class GitLabClient {
   getDeployments({ id, name, avatar_url, web_url, previous }) {
     // first lets see how many deployments there are, which will help us not look where we don't need to
     return rp({
-      uri: `${gitlab}projects/${id}/deployments?private_token=${this.token}`,
+      uri: `${this.gitlabUrl}projects/${id}/deployments?private_token=${this.token}`,
       method: "HEAD"
     })
       .then(response => {
@@ -215,7 +216,7 @@ class GitLabClient {
           );
         }
         return rp(
-          `${gitlab}projects/${id}/deployments?private_token=${this.token}&sort=desc&per_page=50&order_by=created_at`
+          `${this.gitlabUrl}projects/${id}/deployments?private_token=${this.token}&sort=desc&per_page=50&order_by=created_at`
         ).then(resp => ({
           total,
           id,

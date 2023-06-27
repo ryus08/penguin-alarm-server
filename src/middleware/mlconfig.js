@@ -55,9 +55,15 @@ module.exports = ({ app, config }) => {
       { concurrency: 3 }
     );
 
-  app.locals.machineLearning = new MachineLearning({
-    statsFetch,
-    reducer,
-    modelId: config.activeModel
-  });
+  if (config.activeModel) {
+    app.locals.machineLearning = new MachineLearning({
+      statsFetch,
+      reducer,
+      modelId: config.activeModel
+    });
+  } else {
+    app.locals.machineLearning = {
+      predict: () => P.resolve({})
+    };
+  }
 };

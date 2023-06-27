@@ -1,6 +1,5 @@
 const _map = require("lodash.map");
 const configs = require("../data/configs");
-const dynamoClient = require("../data/dynamoclient");
 
 const service = ({ app, config }) => {
   app.get("/configurations/:configName", (req, res) => {
@@ -17,7 +16,7 @@ const service = ({ app, config }) => {
 
   app.delete("/configurations/:configName", (req, res) => {
     const name = req.params.configName;
-    dynamoClient
+    app.locals.configDAO
       .deleteConfig({ name })
       .then(() => {
         configs.remove({ name });
@@ -42,7 +41,7 @@ const service = ({ app, config }) => {
         .json("Either newrelic.policy or newrelic.policies must be provided");
     }
 
-    return dynamoClient
+    return app.locals.configDAO
       .putConfig({ name, config: req.body })
       .then(() => {
         configs.put({ name, data: req.body });
