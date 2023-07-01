@@ -14,4 +14,6 @@ logging:
 #   origin: "*"
 data:
   source: memory
+preferences:
+  source: memory
 gitlabUrl: "https://gitlab.com"

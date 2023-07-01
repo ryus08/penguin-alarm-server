@@ -282,6 +282,26 @@ paths:
       responses:
         '200':
           description: possible matches
+  /preferences:
+    get:
+      summary: gets the logged in user's preferences
+      responses:
+        '200':
+          description:  The logged id user's preferences
+          schema:
+            $ref: "#/definitions/preferences"
+    put:
+      summary: sets the logged in user's preferences
+      parameters:
+      - in: body
+        name: body
+        schema:
+          $ref: "#/definitions/preferences"
+      responses:
+        '200':
+          description: The logged id user's preferences
+          schema:
+            $ref: "#/definitions/preferences"
   /configurations:
     get:
       summary: gets all the configurations available
@@ -364,6 +384,23 @@ definitions:
         $ref: "#/definitions/GitLab"
       slideshow:
         $ref: "#/definitions/Slideshow"
+  preferences:
+    type: object
+    properties:
+      gitLabUsername:
+        type: string
+      nrApiKey:
+        type: string
+      topColor:
+        type: string
+      bottomColor:
+        type: string
+      achievements:
+        type: array
+      activity:
+        type: object
+      monthActivity:
+        type: array
   TrainingDataRequirements:
     type: object
     properties:

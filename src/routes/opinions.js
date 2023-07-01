@@ -6,7 +6,7 @@ const service = ({ app }) => {
   app.get("/:configName/opinions", (req, res) => {
     const merges = res.locals.getMerges();
 
-    res.locals.opinions().then(opinions => {
+    res.locals.opinionDAO.getOpinions().then(opinions => {
       const retVal = _map(merges, merge => ({
         title: merge.title,
         web_url: merge.web_url,
@@ -21,8 +21,8 @@ const service = ({ app }) => {
   });
 
   app.put("/:configName/opinions/:merge_id", (req, res) => {
-    res.locals
-      .recordOpinion({
+    res.locals.opinionDAO
+      .putOpinion({
         mergeId: req.params.merge_id,
         project_id: req.body.project_id,
         iid: req.body.iid,
