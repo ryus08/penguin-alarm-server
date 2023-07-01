@@ -17,4 +17,6 @@ A server which aggregates and caches git-provider (currently just Gitlab) inform
   * Loading newrelic monitoring into the app and poller, see comment in app.js and pollers/poll.js
 * Use a real cache in ./src/clients/clientbuilder
 * Set rp timeouts higher
-* The Build!
+* Upgrade dependencies.
+* Smoke tests
+* publish docker image

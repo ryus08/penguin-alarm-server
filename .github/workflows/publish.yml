@@ -1,0 +1,24 @@
+name: publish # TODO: have this use the build workflow
+on:
+  release:
+    types: [created]
+jobs:
+  build:
+    name: publish
+    runs-on: ubuntu-latest
+   permissions:
+     contents: read
+     id-token: write
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16.x'
+          registry-url: 'https://registry.npmjs.org' # Can I bake this into package.json?
+      - run: npm ci
+      - run: npm run build --if-present
+      - run: npm test
+      - run: npm version --new-version "${GITHUB_REF:11}" --no-git-tag-version
+      - run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

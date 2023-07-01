@@ -1,9 +1,0 @@
-OptionSettings:
-  aws:elasticbeanstalk:application:environment:
-    SELF_URL: https://penguinserver.fi.cimpress.io
-  aws:ec2:vpc:
-    ELBSubnets: {{#each publicSubnets}}{{this}}{{#unless @last}},{{/unless}}{{/each}}
-    ELBScheme: internet-facing
-  aws:autoscaling:asg:
-      MinSize: 1
-      MaxSize: 1

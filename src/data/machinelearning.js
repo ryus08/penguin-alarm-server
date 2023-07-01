@@ -107,7 +107,6 @@ class MachineLearning {
   }
 
   createModel({ sourceData, s3FileName }) {
-    // jscs:disable maximumLineLength
     return this.createDataSource({ sourceData, s3FileName }).then(dataSource =>
       machinelearning
         .createMLModel({
@@ -120,7 +119,6 @@ class MachineLearning {
         })
         .promise()
     );
-    // jscs:enable maximumLineLength
   }
 
   getModels() {

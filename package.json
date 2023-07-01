@@ -1,9 +1,13 @@
 {
-  "name": "penguinserver",
+  "name": "@ryus08/penguinserver",
   "version": "0.0.0",
   "description": "Back-end for monitoring applications and code progress",
   "license": "BSD-2-Clause",
   "author": "cimpress",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ryus08/penguin-alarm-server.git"
+  },
   "dependencies": {
     "aws-sdk": "^2.1105.0",
     "bluebird": "^3.7.2",
@@ -65,10 +69,5 @@
     "updateadrlogs": "adr-log -d docs/adr/ -i docs/adr/index.md",
     "test": "npm run eslint-check && eslint ./src && depcheck . --ignores husky,newrelic,config",
     "start": "node src/app.js"
-  },
-  "deploy": {
-    "memoryReservation": 1536,
-    "region": "eu-west-1",
-    "sumoCollectorUrl": "https://endpoint2.collection.us2.sumologic.com/receiver/v1/http/ZaVnC4dhaV0P8XeXz2FfwLyDabztk9IrpqT6Dvf9N4LHlwgulqWsWRis1NtASqoa2gIMEVHH1zuN6OLRnJZ5O-lXNEgzriR63siGgbIeKFBcw8jrsuq1Sg=="
   }
 }
