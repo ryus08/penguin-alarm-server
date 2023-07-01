@@ -9,13 +9,14 @@ const queries = require("./routes/queries");
 const configData = require("./routes/configdata");
 const opinions = require("./routes/opinions");
 const predictions = require("./routes/predictions");
+const preferences = require("./routes/preferences");
+const auth = require("./middleware/auth");
 const logger = require("./middleware/logger");
 const dataAccess = require("./middleware/dataAccess");
 const pollSet = require("./middleware/pollset");
 const getMerges = require("./middleware/getmerges");
 // const internalOnly = require("./middleware/internalonly");
 const clientBuilder = require("./clients/clientbuilder");
-const opinionMw = require("./middleware/opinions");
 const mlConfig = require("./middleware/mlconfig");
 
 const app = express();
@@ -24,19 +25,20 @@ if (require.main === module) {
   app.locals.config = config;
   app.use(cors());
   app.use(express.json());
-  logger({ app });
+  logger({ app, config });
   // internalonly({ app });
+  auth({ app, config });
   dataAccess({ app, config });
   pollSet({ app, config });
   getMerges({ app, config });
   clientBuilder({ app, config });
   mlConfig({ app, config });
-  opinionMw({ app, config });
   search({ app, config });
   queries({ app, config });
   configData({ app, config });
   opinions({ app, config });
   predictions({ app, config });
+  preferences({ app, config });
   app.use(express.static("./src/public"));
   app.listen(config.port, () => {
     // eslint-disable-next-line no-console

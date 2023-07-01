@@ -13,3 +13,5 @@ auth0:
 activeModel: ml-K1cm2cPPAz2
 data:
   source: dynamo
+preferences:
+  source: customizr

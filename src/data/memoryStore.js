@@ -1,45 +1,51 @@
+/* eslint-disable class-methods-use-this */
 /* eslint-disable camelcase */
 const P = require("bluebird");
 const _groupBy = require("lodash.groupby");
 
+const db = {
+  configs: {},
+  opinions: {},
+  preferences: {}
+};
+
 class MemoryStore {
-  constructor() {
-    this.db = {
-      configs: {},
-      opinions: {}
-    };
+  constructor(userSub) {
+    this.userSub = userSub;
   }
 
   getConfigs() {
-    return P.resolve(Object.values(this.db.configs));
+    return P.resolve(Object.values(db.configs));
   }
 
   deleteConfig({ name }) {
-    delete this.db.config[name];
+    delete db.config[name];
     return P.resolve();
   }
 
   putConfig({ name, config }) {
-    this.db.configs[name] = config;
+    db.configs[name] = config;
     return P.resolve(config);
   }
 
   getAllOpinions() {
-    return P.resolve(Object.values(this.db.opinions));
+    return P.resolve(Object.values(db.opinions));
   }
 
-  getOpinions({ sub }) {
+  getOpinions() {
     return this.getAllOpinions()
-      .then(opinions => opinions.filter(opinion => opinion.sub === sub))
+      .then(opinions =>
+        opinions.filter(opinion => opinion.sub === this.userSub)
+      )
       .then(opinions => opinions.map(opinion => opinion.value))
       .then(values => _groupBy(values, "mergeId"));
   }
 
-  putOpinion({ sub, project_id, iid, mergeId, sick, configName }) {
-    const mergeIdSub = `${mergeId}-${sub}`;
-    this.db.opinions[mergeIdSub] = {
+  putOpinion({ project_id, iid, mergeId, sick, configName }) {
+    const mergeIdSub = `${mergeId}-${this.userSub}`;
+    db.opinions[mergeIdSub] = {
       mergeIdSub,
-      sub,
+      sub: this.userSub,
       value: {
         sick,
         configName,
@@ -48,10 +54,17 @@ class MemoryStore {
         mergeId
       }
     };
-    return P.resolve(this.db.opinions[mergeIdSub]);
+    return P.resolve(db.opinions[mergeIdSub]);
+  }
+
+  getPreferences() {
+    return P.resolve(db.preferences[this.userSub]);
+  }
+
+  setPreferences(preferences) {
+    db.preferences[this.userSub] = preferences;
+    return P.resolve(preferences);
   }
 }
 
-const memoryStore = new MemoryStore();
-
-module.exports = memoryStore;
+module.exports = MemoryStore;

@@ -13,7 +13,8 @@ A server which aggregates and caches git-provider (currently just Gitlab) inform
 * Anything commented out in the config. These are nice to haves
 * Get ML working without AWS. And write down how to get it working with AWS
 * More gracefully skip newrelic and/or put behind an interface for other APM solutions
-* Get the cimpress.yaml config in a better place for reintegrating for Cimpress. Also
+* Get the cimpress.yaml config in a better place for reintegrating for Cimpress.
   * Loading newrelic monitoring into the app and poller, see comment in app.js and pollers/poll.js
 * Use a real cache in ./src/clients/clientbuilder
 * Set rp timeouts higher
+* The Build!

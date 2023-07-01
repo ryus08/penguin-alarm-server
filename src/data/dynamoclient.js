@@ -1,21 +1,24 @@
+/* eslint-disable class-methods-use-this */
 /* eslint-disable camelcase */
 const P = require("bluebird");
 const AWS = require("aws-sdk");
 const _map = require("lodash.map");
 const _groupBy = require("lodash.groupby");
 
+AWS.config.update({ region: "eu-west-1" });
+AWS.config.setPromisesDependency(P);
+
+const db = new AWS.DynamoDB.DocumentClient({ region: "eu-west-1" });
 class DynamoClient {
-  constructor() {
-    AWS.config.update({ region: "eu-west-1" });
-    AWS.config.setPromisesDependency(P);
-    this.db = new AWS.DynamoDB.DocumentClient({ region: "eu-west-1" });
+  constructor(sub) {
+    this.sub = sub;
   }
 
   getConfigs() {
     const params = {
       TableName: "PenguinConfig"
     };
-    return this.db
+    return db
       .scan(params)
       .promise()
       .then(result => result.Items);
@@ -28,7 +31,7 @@ class DynamoClient {
         name
       }
     };
-    return this.db.delete(params).promise();
+    return db.delete(params).promise();
   }
 
   putConfig({ name, config }) {
@@ -39,20 +42,20 @@ class DynamoClient {
         config
       }
     };
-    return this.db.put(params).promise();
+    return db.put(params).promise();
   }
 
   getAllOpinions() {
     const params = {
       TableName: "PenguinOpinion"
     };
-    return this.db
+    return db
       .scan(params)
       .promise()
       .then(result => result.Items);
   }
 
-  getOpinions({ sub }) {
+  getOpinions() {
     const params = {
       TableName: "PenguinOpinion",
       IndexName: "sub-index",
@@ -62,11 +65,11 @@ class DynamoClient {
         "#sub": "sub"
       },
       ExpressionAttributeValues: {
-        ":sub": sub
+        ":sub": this.sub
       }
     };
 
-    return this.db
+    return db
       .query(params)
       .promise()
       .then(result => {
@@ -75,12 +78,12 @@ class DynamoClient {
       });
   }
 
-  putOpinion({ sub, project_id, iid, mergeId, sick, configName }) {
+  putOpinion({ project_id, iid, mergeId, sick, configName }) {
     const params = {
       TableName: "PenguinOpinion",
       Item: {
-        mergeIdSub: `${mergeId}-${sub}`,
-        sub,
+        mergeIdSub: `${mergeId}-${this.sub}`,
+        sub: this.sub,
         value: {
           sick,
           configName,
@@ -90,10 +93,8 @@ class DynamoClient {
         }
       }
     };
-    return this.db.put(params).promise();
+    return db.put(params).promise();
   }
 }
 
-const dynamoClient = new DynamoClient();
-
-module.exports = dynamoClient;
+module.exports = DynamoClient;
