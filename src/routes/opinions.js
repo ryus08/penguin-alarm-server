@@ -6,8 +6,8 @@ const service = ({ app }) => {
   app.get("/:configName/opinions", (req, res) => {
     const merges = res.locals.getMerges();
 
-    res.locals.opinionDAO.getOpinions().then(opinions => {
-      const retVal = _map(merges, merge => ({
+    res.locals.opinionDAO.getOpinions().then((opinions) => {
+      const retVal = _map(merges, (merge) => ({
         title: merge.title,
         web_url: merge.web_url,
         projectName: merge.projectName,

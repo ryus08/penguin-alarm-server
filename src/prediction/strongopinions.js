@@ -8,12 +8,12 @@ module.exports = ({
   minimumSupport = 1,
   allOpinions
 }) =>
-  Promise.resolve(allOpinions).then(opinions => {
+  Promise.resolve(allOpinions).then((opinions) => {
     // pull all the data together by merge request
     const grouped = _groupBy(opinions, "value.mergeId");
 
     // then pick out the strong data points
-    const dataPoints = _map(grouped, value => {
+    const dataPoints = _map(grouped, (value) => {
       // then get all the sickness values
       const sicknesses = _map(value, "value.sick");
 
@@ -43,5 +43,5 @@ module.exports = ({
 
       return retVal;
     });
-    return _filter(dataPoints, data => data.supporters >= minimumSupport);
+    return _filter(dataPoints, (data) => data.supporters >= minimumSupport);
   });

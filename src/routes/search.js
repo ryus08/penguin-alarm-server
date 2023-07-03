@@ -9,9 +9,9 @@ const service = ({ app }) => {
     if (isNaN(name)) {
       app.locals.gitLabClient
         .groupSearch({ name })
-        .then(response => {
+        .then((response) => {
           res.status(200).json(
-            _map(response, project => ({
+            _map(response, (project) => ({
               id: project.id,
               name: project.name
             }))
@@ -23,7 +23,7 @@ const service = ({ app }) => {
     } else {
       app.locals.gitLabClient
         .getGroup({ groupId: name })
-        .then(project => {
+        .then((project) => {
           res.status(200).json([{ id: project.id, name: project.name }]);
         })
         .catch(() => {

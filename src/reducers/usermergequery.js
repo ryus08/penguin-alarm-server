@@ -6,21 +6,21 @@ const _find = require("lodash.find");
 const _maxBy = require("lodash.maxby");
 
 const parseActive = ({ active, username }) => {
-  const isActive = _map(active, merge => {
+  const isActive = _map(active, (merge) => {
     merge.reviewed = merge.author.username === username;
     return merge;
   });
 
-  const computeLastChange = merge => {
+  const computeLastChange = (merge) => {
     const commits = _filter(
       merge.systemComments,
-      comment => comment.type === null && comment.body.startsWith("added ")
+      (comment) => comment.type === null && comment.body.startsWith("added ")
     );
 
     return _get(_maxBy(commits, "created_at"), "created_at");
   };
 
-  const computeUrgency = merge => {
+  const computeUrgency = (merge) => {
     let urgency = 0;
 
     // if the user has made a comment, but there's been changes
@@ -55,10 +55,10 @@ const parseActive = ({ active, username }) => {
     return urgency;
   };
 
-  const allMerges = _map(isActive, merge => {
+  const allMerges = _map(isActive, (merge) => {
     merge.userApproved = _find(
       merge.approvers.approved_by,
-      approver => _get(approver, "user.username") === username
+      (approver) => _get(approver, "user.username") === username
     );
     merge.isAuthor = merge.author.username === username;
     merge.youCanMerge = merge.isAuthor && merge.approvers.approvals_left === 0;
@@ -66,7 +66,7 @@ const parseActive = ({ active, username }) => {
     merge.yourComments = _sortBy(
       _filter(
         merge.comments,
-        comment => comment.author.username === username && !merge.isAuthor
+        (comment) => comment.author.username === username && !merge.isAuthor
       ),
       "created_at"
     ).reverse();
@@ -90,7 +90,7 @@ const parseActive = ({ active, username }) => {
 const openMerge = ({ merges, username, includeWorkInProgress = false }) => {
   const active = _filter(
     merges,
-    merge =>
+    (merge) =>
       (includeWorkInProgress || !merge.work_in_progress) &&
       merge.state !== "merged"
   );

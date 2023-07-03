@@ -33,7 +33,7 @@ class PredictionCache {
   missing(merges) {
     const retVal = _filter(
       merges,
-      merge => !predictionCache.get(keyFn(merge.project_id, merge.iid))
+      (merge) => !predictionCache.get(keyFn(merge.project_id, merge.iid))
     );
 
     return retVal;
@@ -44,7 +44,7 @@ class PredictionCache {
   }
 
   setLivePredictions({ merges, batchId }) {
-    _forEach(merges, merge => {
+    _forEach(merges, (merge) => {
       liveBatchCache.set(keyFn(merge), batchId);
     });
   }

@@ -34,11 +34,11 @@ class MemoryStore {
 
   getOpinions() {
     return this.getAllOpinions()
-      .then(opinions =>
-        opinions.filter(opinion => opinion.sub === this.userSub)
+      .then((opinions) =>
+        opinions.filter((opinion) => opinion.sub === this.userSub)
       )
-      .then(opinions => opinions.map(opinion => opinion.value))
-      .then(values => _groupBy(values, "mergeId"));
+      .then((opinions) => opinions.map((opinion) => opinion.value))
+      .then((values) => _groupBy(values, "mergeId"));
   }
 
   putOpinion({ project_id, iid, mergeId, sick, configName }) {
