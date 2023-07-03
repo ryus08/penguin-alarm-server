@@ -23,7 +23,7 @@ module.exports = ({ app }) => {
     res.locals.getMerges = () => {
       const teamConfig = res.locals.getTeamConfig();
       const merges = _flatten(
-        _map(teamConfig.gitlab.groupIds, groupId =>
+        _map(teamConfig.gitlab.groupIds, (groupId) =>
           _get(groupData.get({ groupId }), "merges")
         )
       );
@@ -34,7 +34,7 @@ module.exports = ({ app }) => {
       const teamConfig = res.locals.getTeamConfig();
       return _compact(
         _flatten(
-          _map(teamConfig.gitlab.groupIds, groupId => {
+          _map(teamConfig.gitlab.groupIds, (groupId) => {
             const results = _get(groupData.get({ groupId }), "deployments", []);
             return _flatMap(results, "deployments");
           })
@@ -51,8 +51,8 @@ module.exports = ({ app }) => {
         : app.locals.gitLabClient.getMergeRequest(req.params);
 
       return mergePromise
-        .then(mrg => app.locals.gitLabClient.addChanges({ merge: mrg }))
-        .then(mrg => app.locals.reduceMergeToStats({ merge: mrg }));
+        .then((mrg) => app.locals.gitLabClient.addChanges({ merge: mrg }))
+        .then((mrg) => app.locals.reduceMergeToStats({ merge: mrg }));
     };
 
     next();

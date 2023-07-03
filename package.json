@@ -47,27 +47,26 @@
     "lodash.uniqwith": "^4.5.0",
     "lodash.values": "^4.3.0",
     "moment-business-time": "^0.7.1",
-    "newrelic": "^6.14.0",
     "node-cache": "^4.2.1",
     "request-promise": "^4.2.6",
     "uuid": "^3.4.0",
     "winston": "^3.9.0"
   },
   "devDependencies": {
-    "depcheck": "^0.6.11",
-    "eslint": "^5.16.0",
-    "eslint-config-airbnb-base": "^13.2.0",
-    "eslint-config-prettier": "^3.6.0",
-    "eslint-plugin-chai-friendly": "^0.4.1",
-    "eslint-plugin-import": "^2.25.4",
-    "eslint-plugin-prettier": "^2.6.2",
-    "prettier": "^1.19.1"
+    "depcheck": "^1.4.3",
+    "eslint": "^8.44.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-chai-friendly": "^0.7.2",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-prettier": "^4.2.1",
+    "prettier": "^2.8.8"
   },
   "scripts": {
     "eslint": "eslint --fix \"src/**/*.js\"",
-    "eslint-check": "eslint --print-config .eslintrc.json | eslint-config-prettier-check",
+    "eslint-check": "eslint-config-prettier .eslintrc.json ",
     "updateadrlogs": "adr-log -d docs/adr/ -i docs/adr/index.md",
-    "test": "npm run eslint-check && eslint ./src && depcheck . --ignores husky,newrelic,config",
+    "test": "npm run eslint-check && eslint ./src && depcheck . --ignores husky,config",
     "start": "node src/app.js"
   }
 }

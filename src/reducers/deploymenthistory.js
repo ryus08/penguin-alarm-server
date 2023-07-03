@@ -7,11 +7,11 @@ module.exports = ({ deployments }) => {
   d.setDate(d.getDate() - 14);
   const filtered = _filter(
     deployments,
-    deployment => deployment.created_at > d.toISOString()
+    (deployment) => deployment.created_at > d.toISOString()
   );
 
   return _sortBy(
-    _map(filtered, deployment => ({
+    _map(filtered, (deployment) => ({
       name: deployment.projectName,
       date: deployment.created_at,
       environment: deployment.environment.name,

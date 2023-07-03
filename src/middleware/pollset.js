@@ -4,7 +4,7 @@ const pollinstance = require("../pollinstance");
 const configs = require("../data/configs");
 
 module.exports = ({ app, config }) => {
-  const isActive = groupId => !app.locals.pollset.shutdown({ groupId });
+  const isActive = (groupId) => !app.locals.pollset.shutdown({ groupId });
 
   const pollFn = ({ groupId }) => {
     const pollInst = pollinstance({
@@ -19,7 +19,7 @@ module.exports = ({ app, config }) => {
       app.locals.machineLearning
         .predict({ merge })
         // eslint-disable-next-line no-return-assign
-        .then(prediction => (merge.prediction = prediction))
+        .then((prediction) => (merge.prediction = prediction))
         .return(merge);
 
     mergeParticipationPoller(pollInst);
@@ -27,8 +27,8 @@ module.exports = ({ app, config }) => {
 
   const pollSet = new Pollset({ pollFn });
 
-  app.locals.configDAO.getConfigs().then(results => {
-    results.forEach(result => {
+  app.locals.configDAO.getConfigs().then((results) => {
+    results.forEach((result) => {
       configs.put({ name: result.name, data: result.config });
     });
     pollSet.sync({ groupIds: configs.getGroupIds() });

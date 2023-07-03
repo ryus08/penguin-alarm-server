@@ -26,39 +26,39 @@ class GitLabClient {
   getProjects({ groupIds }) {
     return P.map(
       groupIds,
-      groupId => {
+      (groupId) => {
         const options = {
           method: "GET",
           uri: `${this.gitlabUrl}groups/${groupId}?private_token=${this.token}`,
           resolveWithFullResponse: true
         };
-        return this.projectCache.get(options, opts => {
+        return this.projectCache.get(options, (opts) => {
           opts.url = opts.uri;
           return P.resolve(rp(opts));
         });
       },
       { concurrency: 3 }
     )
-      .then(responses =>
+      .then((responses) =>
         _flatten(
-          _map(responses, response => JSON.parse(response.body).projects)
+          _map(responses, (response) => JSON.parse(response.body).projects)
         )
       )
-      .then(projects =>
-        projects.filter(project => project.merge_requests_enabled)
+      .then((projects) =>
+        projects.filter((project) => project.merge_requests_enabled)
       );
   }
 
   getGroup({ groupId }) {
     return rp(
       `${this.gitlabUrl}groups/${groupId}?private_token=${this.token}`
-    ).then(response => JSON.parse(response));
+    ).then((response) => JSON.parse(response));
   }
 
   addNotes({ merge }) {
     return rp(
       `${this.gitlabUrl}projects/${merge.project_id}/merge_requests/${merge.iid}/notes?private_token=${this.token}`
-    ).then(response => {
+    ).then((response) => {
       const notes = JSON.parse(response);
       merge.notes = notes;
       return merge;
@@ -77,13 +77,14 @@ class GitLabClient {
       url: `${this.gitlabUrl}projects/${merge.project_id}/merge_requests/${merge.iid}/notes?order_by=created_at&page=${pageNumber}&per_page=100&private_token=${this.token}`,
       resolveWithFullResponse: true
     };
-    return rp(options).then(response => {
+    return rp(options).then((response) => {
       const body = JSON.parse(response.body);
       const comments = _filter(
         body,
-        note => note.system === false && note.author.name !== merge.author.name
+        (note) =>
+          note.system === false && note.author.name !== merge.author.name
       );
-      const systemComments = _filter(body, note => note.system === true);
+      const systemComments = _filter(body, (note) => note.system === true);
       merge.comments = merge.comments.concat(comments);
       merge.systemComments = merge.systemComments.concat(systemComments);
       if (response.headers["x-next-page"]) {
@@ -105,19 +106,24 @@ class GitLabClient {
           `${this.gitlabUrl}projects/${merge.project_id}/merge_requests/${merge.iid}/changes?private_token=${this.token}`
         )
       )
-        .tap(response => {
+        .tap((response) => {
           const changeData = JSON.parse(response);
           merge.changeStats = {
             changeCount: parseInt(changeData.changes_count, 10),
-            new: _filter(changeData.changes, change => change.new_file).length,
-            deleted: _filter(changeData.changes, change => change.deleted_file)
+            new: _filter(changeData.changes, (change) => change.new_file)
               .length,
-            renamed: _filter(changeData.changes, change => change.renamed_file)
-              .length
+            deleted: _filter(
+              changeData.changes,
+              (change) => change.deleted_file
+            ).length,
+            renamed: _filter(
+              changeData.changes,
+              (change) => change.renamed_file
+            ).length
           };
         })
         // eslint-disable-next-line no-console
-        .catch(e => console.error(e))
+        .catch((e) => console.error(e))
         .return(merge)
     );
   }
@@ -125,13 +131,13 @@ class GitLabClient {
   addApprovers({ merge }) {
     return rp(
       `${this.gitlabUrl}projects/${merge.project_id}/merge_requests/${merge.iid}/approvals?private_token=${this.token}`
-    ).then(response => {
+    ).then((response) => {
       const approvers = JSON.parse(response);
       merge.approvers = approvers;
-      _forEach(approvers.approved_by, approver => {
+      _forEach(approvers.approved_by, (approver) => {
         const approvals = _filter(
           merge.systemComments,
-          comment =>
+          (comment) =>
             comment.body === "approved this merge request" &&
             approver.user.id === comment.author.id
         );
@@ -155,9 +161,9 @@ class GitLabClient {
     return rp(
       `${this.gitlabUrl}projects/${projectId}/merge_requests?scope=all&state=opened&private_token=${this.token}`
     )
-      .then(response => JSON.parse(response))
-      .then(response => {
-        response.forEach(mr => {
+      .then((response) => JSON.parse(response))
+      .then((response) => {
+        response.forEach((mr) => {
           mr.projectName = projectName;
         });
         return response;
@@ -174,9 +180,9 @@ class GitLabClient {
         this.token
       }`
     )
-      .then(response => JSON.parse(response))
-      .then(response => {
-        response.forEach(mr => {
+      .then((response) => JSON.parse(response))
+      .then((response) => {
+        response.forEach((mr) => {
           mr.projectName = projectName;
         });
         return response;
@@ -189,9 +195,9 @@ class GitLabClient {
         `${this.gitlabUrl}projects/${project_id}/merge_requests/${iid}?private_token=${this.token}`
       )
     )
-      .then(response => JSON.parse(response))
-      .tap(merge => this.addActivity({ merge }))
-      .tap(merge => this.addChanges({ merge }));
+      .then((response) => JSON.parse(response))
+      .tap((merge) => this.addActivity({ merge }))
+      .tap((merge) => this.addChanges({ merge }));
   }
 
   getDeployments({ id, name, avatar_url, web_url, previous }) {
@@ -200,7 +206,7 @@ class GitLabClient {
       uri: `${this.gitlabUrl}projects/${id}/deployments?private_token=${this.token}`,
       method: "HEAD"
     })
-      .then(response => {
+      .then((response) => {
         // if the current total matches what we already know, then we don't need to do anything else
         const total = parseInt(response["x-total"], 10);
 
@@ -217,14 +223,14 @@ class GitLabClient {
         }
         return rp(
           `${this.gitlabUrl}projects/${id}/deployments?private_token=${this.token}&sort=desc&per_page=50&order_by=created_at`
-        ).then(resp => ({
+        ).then((resp) => ({
           total,
           id,
           deployments: JSON.parse(resp)
         }));
       })
-      .then(response => {
-        response.deployments.forEach(deployment => {
+      .then((response) => {
+        response.deployments.forEach((deployment) => {
           deployment.projectName = name;
           deployment.projectAvatar = avatar_url;
           deployment.projectUrl = web_url;

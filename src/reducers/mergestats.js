@@ -38,13 +38,13 @@ class MergeStats {
   }
 
   comments() {
-    return _flatMap(this.merges, merge => merge.comments);
+    return _flatMap(this.merges, (merge) => merge.comments);
   }
 
   merged() {
     return _filter(
       this.merges,
-      merge =>
+      (merge) =>
         merge.state === "merged" && merge.approvers.approved_by.length > 0
     );
   }
@@ -58,7 +58,7 @@ class MergeStats {
   approvedMerges() {
     return _filter(
       this.merges,
-      merge => _get(merge, "approvers.approved_by", []).length > 0
+      (merge) => _get(merge, "approvers.approved_by", []).length > 0
     );
   }
 
@@ -72,10 +72,10 @@ class MergeStats {
 
   commentScoresByUser() {
     const allComments = this.comments();
-    const commentRawScores = _countBy(allComments, comment =>
+    const commentRawScores = _countBy(allComments, (comment) =>
       _get(comment, "author.id")
     );
-    return _mapValues(commentRawScores, score => ({
+    return _mapValues(commentRawScores, (score) => ({
       raw: score,
       score: (score / allComments.length) * 50
     }));
@@ -84,19 +84,19 @@ class MergeStats {
   commentScoresByProject() {
     const allComments = this.comments();
     const mergeGroups = _groupBy(this.merges, "projectName");
-    return _mapValues(mergeGroups, merges => {
-      const count = _sumBy(merges, merge => merge.comments.length);
+    return _mapValues(mergeGroups, (merges) => {
+      const count = _sumBy(merges, (merge) => merge.comments.length);
       return { raw: count, score: (count / allComments.length) * 50 };
     });
   }
 
   projects() {
-    return _uniq(_map(this.merges, merge => merge.projectName));
+    return _uniq(_map(this.merges, (merge) => merge.projectName));
   }
 
   mergeScoresByProject() {
     const mergeGroups = _groupBy(this.merges, "projectName");
-    return _mapValues(mergeGroups, merges => ({
+    return _mapValues(mergeGroups, (merges) => ({
       raw: merges.length,
       score: (merges.length / this.merges.length) * 50
     }));
@@ -104,13 +104,13 @@ class MergeStats {
 
   approvalScores() {
     const approved = this.approvedMerges();
-    const allApprovals = _flatMap(approved, merge =>
+    const allApprovals = _flatMap(approved, (merge) =>
       _get(merge, "approvers.approved_by", [])
     );
-    const approvalRawScores = _countBy(allApprovals, approval =>
+    const approvalRawScores = _countBy(allApprovals, (approval) =>
       _get(approval, "user.id")
     );
-    return _mapValues(approvalRawScores, score => ({
+    return _mapValues(approvalRawScores, (score) => ({
       raw: score,
       score: (score / approved.length) * 50
     }));
@@ -123,7 +123,7 @@ class MergeStats {
 
     const retVal = {};
     const authors = _uniqWith(
-      _map(this.merges, merge => ({
+      _map(this.merges, (merge) => ({
         id: merge.author.id,
         avatar_url: merge.author.avatar_url
       })),
@@ -132,7 +132,7 @@ class MergeStats {
 
     const allComments = this.comments();
     const commentors = _uniqWith(
-      _map(allComments, comment => ({
+      _map(allComments, (comment) => ({
         id: comment.author.id,
         avatar_url: comment.author.avatar_url
       })),
@@ -140,12 +140,12 @@ class MergeStats {
     );
 
     const approved = this.approvedMerges();
-    const allApprovals = _flatMap(approved, merge =>
+    const allApprovals = _flatMap(approved, (merge) =>
       _get(merge, "approvers.approved_by", [])
     );
 
     const approvers = _uniqWith(
-      _map(allApprovals, approval => ({
+      _map(allApprovals, (approval) => ({
         id: approval.user.id,
         avatar_url: approval.user.avatar_url
       })),
@@ -154,7 +154,7 @@ class MergeStats {
 
     const people = _concat(authors, commentors, approvers);
 
-    _forEach(people, person => {
+    _forEach(people, (person) => {
       retVal[person.id] = person;
     });
 
@@ -163,13 +163,13 @@ class MergeStats {
   }
 
   authors() {
-    return _countBy(this.merges, merge => _get(merge, "author.id"));
+    return _countBy(this.merges, (merge) => _get(merge, "author.id"));
   }
 
   teamCommentRate() {
     const unlawfulMerges = _filter(
       this.merges,
-      merge =>
+      (merge) =>
         merge.approvers.approved_by.length === 0 && merge.state === "merged"
     );
     return (
@@ -203,7 +203,7 @@ class MergeStats {
     const authors = this.authors();
 
     let scores = _assign({}, people);
-    _forIn(scores, value => {
+    _forIn(scores, (value) => {
       value.authored = 0;
       value.participated = this.merges.length;
       value.score = 0;
@@ -235,12 +235,12 @@ class MergeStats {
       participated: score.participated
     }));
 
-    scores = _map(scores, score => {
+    scores = _map(scores, (score) => {
       score.score /= score.participated;
       return score;
     });
 
-    scores = _pickBy(scores, score => score.score);
+    scores = _pickBy(scores, (score) => score.score);
 
     // put it back together with the avatar
     const retVal = [];

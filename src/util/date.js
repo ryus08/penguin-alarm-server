@@ -6,7 +6,7 @@ module.exports = {
     return Math.floor(diff / 1000 / 60);
   },
 
-  dateDiff: dateString => {
+  dateDiff: (dateString) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const currentDate = new Date(dateString);

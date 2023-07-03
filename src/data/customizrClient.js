@@ -13,7 +13,7 @@ class CustomizrClient {
       headers: {
         Authorization: this.authorizationHeader
       }
-    }).then(response => JSON.parse(response));
+    }).then((response) => JSON.parse(response));
   }
 
   setPreferences(data) {

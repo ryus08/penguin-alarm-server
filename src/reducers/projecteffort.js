@@ -8,7 +8,7 @@ module.exports = ({ merges }) => {
   d.setDate(d.getDate() - numberOfDays);
 
   const current = new MergeStats({
-    merges: _filter(merges, merge => merge.created_at > d.toJSON()),
+    merges: _filter(merges, (merge) => merge.created_at > d.toJSON()),
     days: numberOfDays
   });
 

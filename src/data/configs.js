@@ -24,7 +24,7 @@ class Configs {
   }
 
   getGroupIds() {
-    return _uniq(_flatten(_map(configs, config => config.gitlab.groupIds)));
+    return _uniq(_flatten(_map(configs, (config) => config.gitlab.groupIds)));
   }
 }
 

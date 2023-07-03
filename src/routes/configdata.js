@@ -7,7 +7,7 @@ const service = ({ app, config }) => {
   });
 
   app.get("/configurations", (req, res) => {
-    const retVal = _map(configs.getKeys(), key => ({
+    const retVal = _map(configs.getKeys(), (key) => ({
       id: key,
       link: `${config.selfUrl}/configuration/${key}`
     }));
@@ -23,7 +23,7 @@ const service = ({ app, config }) => {
         app.locals.pollset.sync({ groupIds: configs.getGroupIds() });
         res.status(204).json();
       })
-      .catch(e => {
+      .catch((e) => {
         res.status(500).json({ message: e.message });
       });
   });
@@ -48,7 +48,7 @@ const service = ({ app, config }) => {
         app.locals.pollset.sync({ groupIds: configs.getGroupIds() });
         res.status(200).json(req.body);
       })
-      .catch(e => res.status(500).json({ message: e.message }));
+      .catch((e) => res.status(500).json({ message: e.message }));
   });
 };
 

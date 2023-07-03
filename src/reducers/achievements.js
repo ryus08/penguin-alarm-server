@@ -9,15 +9,15 @@ const dateUtil = require("../util/date");
 const dailyStats = require("./dailystats");
 
 module.exports = ({ merges }) => {
-  const getDateIndex = dateTime => 28 - dateUtil.dateDiff(dateTime);
+  const getDateIndex = (dateTime) => 28 - dateUtil.dateDiff(dateTime);
 
   const approvals = activityQuery({ merges, type: "approvals" });
   const comments = activityQuery({ merges, type: "comments" });
   const merged = activityQuery({ merges, type: "merges" });
   const created = activityQuery({ merges, type: "created" });
 
-  const userMap = dataSet =>
-    _map(dataSet, record => {
+  const userMap = (dataSet) =>
+    _map(dataSet, (record) => {
       record.author = record.user.author;
       record.avatar = record.user.avatar;
       record.name = record.user.name;
@@ -28,12 +28,12 @@ module.exports = ({ merges }) => {
     const fiMerges = _get(groupData.get({ groupId: 121 }), "merges");
     const relevantMerges = _filter(
       fiMerges,
-      merge =>
+      (merge) =>
         merge.projectName === "penguin-alarm" ||
         merge.projectName === "penguin-server"
     );
 
-    const formatted = _map(relevantMerges, merge => ({
+    const formatted = _map(relevantMerges, (merge) => ({
       user: {
         author: merge.author.id,
         username: merge.author.username,
@@ -56,23 +56,23 @@ module.exports = ({ merges }) => {
     return _intersectionWith(approvals, comments, merged, comparator);
   };
 
-  const beastMode = () => _filter(comments, comment => comment.count >= 10);
+  const beastMode = () => _filter(comments, (comment) => comment.count >= 10);
 
   const approveThisMessage = () =>
-    _filter(approvals, approval => approval.count >= 5);
+    _filter(approvals, (approval) => approval.count >= 5);
 
-  const jamesJoyce = () => _filter(created, counts => counts.count >= 5);
+  const jamesJoyce = () => _filter(created, (counts) => counts.count >= 5);
 
   const quickDraw = () =>
     _filter(
       activityQuery({ merges, type: "quick" }),
-      counts => counts.count >= 1
+      (counts) => counts.count >= 1
     );
 
   const tooSoon = () =>
     _filter(
       activityQuery({ merges, type: "tooSoon" }),
-      counts => counts.count >= 1
+      (counts) => counts.count >= 1
     );
 
   const breakinTheLaw = () =>

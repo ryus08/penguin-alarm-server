@@ -9,7 +9,7 @@ class PollSet {
   }
 
   sync({ groupIds }) {
-    groupIds.forEach(groupId => {
+    groupIds.forEach((groupId) => {
       if (!this.polls[groupId]) {
         this.polls[groupId] = true;
         this.pollFn({ groupId });
@@ -17,7 +17,7 @@ class PollSet {
     });
 
     // anything that is no longer listed should be marked for shutdown
-    _keys(this.polls).forEach(key => {
+    _keys(this.polls).forEach((key) => {
       if (!_includes(groupIds, parseInt(key, 10))) {
         this.shuttingDown[key] = true;
       }

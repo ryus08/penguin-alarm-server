@@ -34,13 +34,13 @@ class MachineLearning {
         MLModelId: this.modelId,
         PredictEndpoint: predictEndpoint,
         // AWS wants them all as strings for some reason
-        Record: _mapValues(stats, value => value.toString())
+        Record: _mapValues(stats, (value) => value.toString())
       };
 
       return machinelearning
         .predict(params)
         .promise()
-        .then(prediction => {
+        .then((prediction) => {
           predictionCache.set({
             project_id,
             iid,
@@ -61,7 +61,7 @@ class MachineLearning {
             iid: merge.iid
           })
       })
-      .then(prediction => {
+      .then((prediction) => {
         // backward compatible with the old multi-class model
         if (prediction.Prediction.details.PredictiveModelType === "BINARY") {
           prediction.Prediction.predictedLabel =
@@ -79,9 +79,9 @@ class MachineLearning {
     return (
       this.statsFetch(sourceData)
         // turn it into a csv
-        .then(data => jsonexport(data))
+        .then((data) => jsonexport(data))
         // then put it into s3
-        .then(csv =>
+        .then((csv) =>
           s3
             .putObject({
               Bucket: bucket,
@@ -107,17 +107,18 @@ class MachineLearning {
   }
 
   createModel({ sourceData, s3FileName }) {
-    return this.createDataSource({ sourceData, s3FileName }).then(dataSource =>
-      machinelearning
-        .createMLModel({
-          MLModelId: `ml-${uuid()}`,
-          MLModelType: "BINARY",
-          TrainingDataSourceId: dataSource.DataSourceId,
-          MLModelName: "MergeRequestOpinions",
-          Recipe:
-            '{\r\n  "groups" : {\r\n              "NUMERIC_VARS_QB_20" : "group(\'approvalTime\',\'mergeTime\')",\r\n              "NUMERIC_VARS_QB_10" : "group(\'comments\',\'changes\')"\r\n            },\r\n            "assignments" : { },\r\n            "outputs" : [ "ALL_CATEGORICAL", "quantile_bin(NUMERIC_VARS_QB_20,20)", "quantile_bin(NUMERIC_VARS_QB_10,10)" ]\r\n}'
-        })
-        .promise()
+    return this.createDataSource({ sourceData, s3FileName }).then(
+      (dataSource) =>
+        machinelearning
+          .createMLModel({
+            MLModelId: `ml-${uuid()}`,
+            MLModelType: "BINARY",
+            TrainingDataSourceId: dataSource.DataSourceId,
+            MLModelName: "MergeRequestOpinions",
+            Recipe:
+              '{\r\n  "groups" : {\r\n              "NUMERIC_VARS_QB_20" : "group(\'approvalTime\',\'mergeTime\')",\r\n              "NUMERIC_VARS_QB_10" : "group(\'comments\',\'changes\')"\r\n            },\r\n            "assignments" : { },\r\n            "outputs" : [ "ALL_CATEGORICAL", "quantile_bin(NUMERIC_VARS_QB_20,20)", "quantile_bin(NUMERIC_VARS_QB_10,10)" ]\r\n}'
+          })
+          .promise()
     );
   }
 
@@ -125,8 +126,8 @@ class MachineLearning {
     return machinelearning
       .describeMLModels({})
       .promise()
-      .then(models =>
-        _map(models.Results, model => ({
+      .then((models) =>
+        _map(models.Results, (model) => ({
           id: model.MLModelId,
           active: model.MLModelId === this.modelId,
           status: model.Status

@@ -12,18 +12,18 @@ const excludedUsers = [
   5797148 // Lingotek user (opens merge requests for translations)
 ];
 
-const getDateIndex = dateTime => 28 - dateUtil.dateDiff(dateTime);
+const getDateIndex = (dateTime) => 28 - dateUtil.dateDiff(dateTime);
 
-const latestPerUser = formatted => {
+const latestPerUser = (formatted) => {
   const grouped = _groupBy(formatted, "user.author");
   const retVal = [];
-  _forEach(grouped, value => {
+  _forEach(grouped, (value) => {
     retVal.push(_maxBy(value, "dateIndex"));
   });
   return retVal;
 };
 
-const approverMap = approver => ({
+const approverMap = (approver) => ({
   author: approver.user.id,
   authorName: approver.user.name,
   username: approver.user.username,
@@ -31,7 +31,7 @@ const approverMap = approver => ({
   dateIndex: getDateIndex(approver.approved_at)
 });
 
-const commentMap = comment => ({
+const commentMap = (comment) => ({
   author: comment.author.id,
   authorName: comment.author.name,
   avatar: comment.author.avatar_url,
@@ -57,11 +57,11 @@ const dailyCount = ({ merges, reduction }) => {
   // filter out some non-humans
   const filteredContent = _filter(
     content,
-    item => !excludedUsers.includes(item.author)
+    (item) => !excludedUsers.includes(item.author)
   );
 
   // group it by days
-  const groups = _groupBy(filteredContent, data =>
+  const groups = _groupBy(filteredContent, (data) =>
     JSON.stringify({
       dateIndex: data.dateIndex,
       author: data.author,
@@ -85,55 +85,55 @@ const dailyCount = ({ merges, reduction }) => {
 };
 
 module.exports = {
-  comments: merges =>
-    _map(_flatMap(merges, "comments"), comment => commentMap(comment)),
+  comments: (merges) =>
+    _map(_flatMap(merges, "comments"), (comment) => commentMap(comment)),
 
-  mergedNoApproval: merges =>
+  mergedNoApproval: (merges) =>
     _map(
       _filter(
         merges,
-        merge =>
+        (merge) =>
           merge.state === "merged" && merge.approvers.approved_by.length === 0
       ),
-      merge => authorMap(merge.author, merge.updated_at)
+      (merge) => authorMap(merge.author, merge.updated_at)
     ),
 
-  tooSoon: merges => {
-    const tooSoonApprovals = _flatMap(merges, merge =>
-      _filter(merge.approvers.approved_by, approval => {
+  tooSoon: (merges) => {
+    const tooSoonApprovals = _flatMap(merges, (merge) =>
+      _filter(merge.approvers.approved_by, (approval) => {
         const laterComments = _filter(
           merge.comments,
-          comment => comment.created_at > approval.approved_at
+          (comment) => comment.created_at > approval.approved_at
         );
 
         return laterComments.length > 5;
       })
     );
 
-    return _map(tooSoonApprovals, approver => approverMap(approver));
+    return _map(tooSoonApprovals, (approver) => approverMap(approver));
   },
 
-  approvals: merges =>
+  approvals: (merges) =>
     // for each merge, go through each approver to find the latest time they approved
-    _flatMap(merges, merge =>
-      _map(merge.approvers.approved_by, approver => approverMap(approver))
+    _flatMap(merges, (merge) =>
+      _map(merge.approvers.approved_by, (approver) => approverMap(approver))
     ),
-  merges: merges =>
+  merges: (merges) =>
     _filter(
-      _flatMap(merges, merge =>
+      _flatMap(merges, (merge) =>
         authorMap(merge.author, merge.updated_at, { state: merge.state })
       ),
-      merge => merge.state === "merged"
+      (merge) => merge.state === "merged"
     ),
 
-  created: merges =>
-    _flatMap(merges, merge =>
+  created: (merges) =>
+    _flatMap(merges, (merge) =>
       authorMap(merge.author, merge.created_at, { state: merge.state })
     ),
 
-  quick: merges =>
+  quick: (merges) =>
     _filter(
-      _flatMap(merges, merge =>
+      _flatMap(merges, (merge) =>
         authorMap(merge.author, merge.updated_at, {
           state: merge.state,
           updated_at: merge.updated_at,
@@ -141,7 +141,7 @@ module.exports = {
           approvers: merge.approvers
         })
       ),
-      merge =>
+      (merge) =>
         merge.state === "merged" &&
         merge.approvers.approved_by.length > 0 &&
         dateUtil.minuteDiff(merge.created_at, merge.updated_at) < 5

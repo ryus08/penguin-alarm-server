@@ -21,7 +21,7 @@ class DynamoClient {
     return db
       .scan(params)
       .promise()
-      .then(result => result.Items);
+      .then((result) => result.Items);
   }
 
   deleteConfig({ name }) {
@@ -52,7 +52,7 @@ class DynamoClient {
     return db
       .scan(params)
       .promise()
-      .then(result => result.Items);
+      .then((result) => result.Items);
   }
 
   getOpinions() {
@@ -72,8 +72,8 @@ class DynamoClient {
     return db
       .query(params)
       .promise()
-      .then(result => {
-        const values = _map(result.Items, item => item.value);
+      .then((result) => {
+        const values = _map(result.Items, (item) => item.value);
         return _groupBy(values, "mergeId");
       });
   }

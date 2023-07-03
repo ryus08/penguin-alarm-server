@@ -7,28 +7,28 @@ const service = ({ app }) => {
       .predict({
         merge: req.params
       })
-      .then(prediction => {
+      .then((prediction) => {
         res.status(200).json(prediction);
       })
-      .catch(err => res.status(500).json(err))
+      .catch((err) => res.status(500).json(err))
   );
 
   app.post("/models", (req, res) =>
     app.locals.opinionDAO
       .getAllOpinions()
-      .then(allOpinions => strongOpinions(req.body, allOpinions))
-      .then(merges =>
+      .then((allOpinions) => strongOpinions(req.body, allOpinions))
+      .then((merges) =>
         app.locals.machineLearning.createModel({
           sourceData: merges,
           s3FileName: `training-${uuidv4()}.csv`
         })
       )
       .then(() => res.status(204).json({}))
-      .catch(err => res.status(500).json(err))
+      .catch((err) => res.status(500).json(err))
   );
 
   app.get("/models", (req, res) =>
-    app.locals.machineLearning.getModels().then(models => {
+    app.locals.machineLearning.getModels().then((models) => {
       res.status(200).json(models);
     })
   );

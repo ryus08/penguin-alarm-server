@@ -43,7 +43,7 @@ module.exports = ({ config, update, predictor }) => {
           // get all the projects for the given groups
           .then(() => configuration.gitLabClient.getProjects(configuration))
           // then get all the merge requests for each project
-          .then(projects =>
+          .then((projects) =>
             P.join(
               mergeFetch({
                 projects,
@@ -60,7 +60,7 @@ module.exports = ({ config, update, predictor }) => {
               }
             )
           )
-          .catch(e => {
+          .catch((e) => {
             // eslint-disable-next-line no-console
             console.warn(e);
           })

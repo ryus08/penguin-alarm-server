@@ -7,7 +7,7 @@ const groupData = require("../data/groupdata");
 const MachineLearning = require("../data/machinelearning");
 
 module.exports = ({ app, config }) => {
-  const getApprovalTime = merge => {
+  const getApprovalTime = (merge) => {
     const approvals = _get(merge, "approvers.approved_by", []);
     const approved_at = approvals.length
       ? _min(approvals, "approved_at").approved_at
@@ -17,7 +17,7 @@ module.exports = ({ app, config }) => {
     );
   };
 
-  const getMergeTime = merge => {
+  const getMergeTime = (merge) => {
     const mergeDate =
       merge.state === "merged" ? merge.updated_at : moment.utc();
     return (
@@ -33,10 +33,10 @@ module.exports = ({ app, config }) => {
     project_id: merge.project_id
   });
 
-  const statsFetch = merges =>
+  const statsFetch = (merges) =>
     P.map(
       merges,
-      merge => {
+      (merge) => {
         // if we already have the the thing in memory, then we should use that
         const existingMerge = groupData.getMerge(merge);
         const mergePromise = existingMerge
@@ -44,8 +44,8 @@ module.exports = ({ app, config }) => {
           : app.locals.gitLabClient.getMergeRequest(merge);
 
         return mergePromise
-          .then(mergeData => reducer({ merge: mergeData }))
-          .then(stats => {
+          .then((mergeData) => reducer({ merge: mergeData }))
+          .then((stats) => {
             if (merge.concensus) {
               stats.sickness = merge.concensus === "bad";
             }

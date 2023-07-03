@@ -9,7 +9,7 @@ module.exports = ({ merges, includeWorkInProgress = false }) => {
   d.setDate(d.getDate() - numberOfDays);
 
   const current = new MergeStats({
-    merges: _filter(merges, merge => merge.created_at > d.toJSON()),
+    merges: _filter(merges, (merge) => merge.created_at > d.toJSON()),
     days: numberOfDays
   });
 
@@ -18,17 +18,17 @@ module.exports = ({ merges, includeWorkInProgress = false }) => {
   return {
     active: _filter(
       merges,
-      merge =>
+      (merge) =>
         (includeWorkInProgress || !merge.work_in_progress) &&
         merge.state !== "merged"
     ),
     recent: _filter(
       merges,
-      merge =>
+      (merge) =>
         merge.state === "merged" &&
         moment().workingDiff(moment(merge.updated_at), "hours") <= 8
     ),
-    all: _map(merges, merge => merge.web_url),
+    all: _map(merges, (merge) => merge.web_url),
     mergeStats: current.totalScores(),
     teamStats: [
       {

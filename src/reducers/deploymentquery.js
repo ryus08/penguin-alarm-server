@@ -13,11 +13,11 @@ module.exports = ({ allDeployments }) => {
   lastPoll.setDate(lastPoll.getDate() - 1);
 
   const byProject = _groupBy(allDeployments, "projectName");
-  const isProductionDeployment = deployment => {
+  const isProductionDeployment = (deployment) => {
     let isProdDeploy = false;
     if (deployment) {
       const deploymentName = _get(deployment, "environment.name");
-      productionValues.forEach(value => {
+      productionValues.forEach((value) => {
         if (deploymentName && deploymentName.toLowerCase().includes(value)) {
           isProdDeploy = true;
         }
@@ -42,11 +42,11 @@ module.exports = ({ allDeployments }) => {
 
   projectStats = _sortBy(projectStats, "last").reverse();
 
-  const productionDeployments = _filter(allDeployments, deployment =>
+  const productionDeployments = _filter(allDeployments, (deployment) =>
     isProductionDeployment(deployment)
   );
 
-  let recentDeployments = _filter(productionDeployments, deployment => {
+  let recentDeployments = _filter(productionDeployments, (deployment) => {
     const dateDeployed = new Date(deployment.created_at);
     return dateDeployed > lastPoll;
   });
@@ -57,7 +57,7 @@ module.exports = ({ allDeployments }) => {
       .slice(0, 5);
   }
 
-  const deployments = _map(_flatten(recentDeployments), deploy => ({
+  const deployments = _map(_flatten(recentDeployments), (deploy) => ({
     projectName: deploy.projectName,
     deploymentTime: deploy.created_at,
     userName: deploy.user.name,
