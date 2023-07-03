@@ -20,3 +20,4 @@ A server which aggregates and caches git-provider (currently just Gitlab) inform
 * Upgrade dependencies.
 * Smoke tests
 * publish docker image
+* Get the poller to trigger immediately on a new config
