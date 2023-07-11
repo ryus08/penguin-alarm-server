@@ -10,8 +10,8 @@ const db = {
 };
 
 class MemoryStore {
-  constructor(userSub) {
-    this.userSub = userSub;
+  constructor(user) {
+    this.user = user;
   }
 
   getConfigs() {
@@ -35,17 +35,17 @@ class MemoryStore {
   getOpinions() {
     return this.getAllOpinions()
       .then((opinions) =>
-        opinions.filter((opinion) => opinion.sub === this.userSub)
+        opinions.filter((opinion) => opinion.sub === this.user.sub)
       )
       .then((opinions) => opinions.map((opinion) => opinion.value))
       .then((values) => _groupBy(values, "mergeId"));
   }
 
   putOpinion({ project_id, iid, mergeId, sick, configName }) {
-    const mergeIdSub = `${mergeId}-${this.userSub}`;
+    const mergeIdSub = `${mergeId}-${this.user.sub}`;
     db.opinions[mergeIdSub] = {
       mergeIdSub,
-      sub: this.userSub,
+      sub: this.user.sub,
       value: {
         sick,
         configName,
@@ -58,11 +58,11 @@ class MemoryStore {
   }
 
   getPreferences() {
-    return P.resolve(db.preferences[this.userSub]);
+    return P.resolve(db.preferences[this.user.sub]);
   }
 
   setPreferences(preferences) {
-    db.preferences[this.userSub] = preferences;
+    db.preferences[this.user.sub] = preferences;
     return P.resolve(preferences);
   }
 }

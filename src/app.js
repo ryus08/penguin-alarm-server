@@ -10,7 +10,9 @@ const configData = require("./routes/configdata");
 const opinions = require("./routes/opinions");
 const predictions = require("./routes/predictions");
 const preferences = require("./routes/preferences");
-const auth = require("./middleware/auth");
+const health = require("./routes/health");
+const auth = require("./middleware/jwtAuth");
+const error = require("./middleware/error");
 const logger = require("./middleware/logger");
 const dataAccess = require("./middleware/dataAccess");
 const pollSet = require("./middleware/pollset");
@@ -27,12 +29,13 @@ if (require.main === module) {
   app.use(express.json());
   logger({ app, config });
   // internalonly({ app });
-  auth({ app, config });
+  app.use(auth.getMiddleware(app).unless({ path: health.paths }));
   dataAccess({ app, config });
   pollSet({ app, config });
   getMerges({ app, config });
   clientBuilder({ app, config });
   mlConfig({ app, config });
+  health({ app });
   search({ app, config });
   queries({ app, config });
   configData({ app, config });
@@ -40,6 +43,7 @@ if (require.main === module) {
   predictions({ app, config });
   preferences({ app, config });
   app.use(express.static("./src/public"));
+  error({ app });
   app.listen(config.port, () => {
     // eslint-disable-next-line no-console
     console.log(`${config.name} at ${config.selfUrl}`);
