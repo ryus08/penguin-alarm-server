@@ -86,7 +86,7 @@ class MergeStats {
     const mergeGroups = _groupBy(this.merges, "projectName");
     return _mapValues(mergeGroups, (merges) => {
       const count = _sumBy(merges, (merge) => merge.comments.length);
-      return { raw: count, score: (count / allComments.length) * 50 };
+      return { raw: count, score: (count / (allComments.length || 1)) * 50 };
     });
   }
 
@@ -173,7 +173,7 @@ class MergeStats {
         merge.approvers.approved_by.length === 0 && merge.state === "merged"
     );
     return (
-      this.comments().length / (this.merges.length - unlawfulMerges.length)
+      this.comments().length / (this.merges.length - unlawfulMerges.length || 1)
     );
   }
 

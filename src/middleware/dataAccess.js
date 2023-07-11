@@ -10,9 +10,9 @@ module.exports = ({ app, config }) => {
   }
   app.use((req, res, next) => {
     if (config.data.source === "dynamo") {
-      res.locals.opinionDAO = new DynamoClient(req.user.sub);
+      res.locals.opinionDAO = new DynamoClient(req.user);
     } else {
-      res.locals.opinionDAO = new MemoryStore(req.user.sub);
+      res.locals.opinionDAO = new MemoryStore(req.user);
     }
 
     if (config.preferences.source === "customizr") {
@@ -24,7 +24,7 @@ module.exports = ({ app, config }) => {
       res.locals.preferencesDAO = new CustomizrClient(
         req.header("Authorization")
       );
-      res.locals.preferencesDAO = new MemoryStore(req.user.sub);
+      res.locals.preferencesDAO = new MemoryStore(req.user);
     }
     next();
   });

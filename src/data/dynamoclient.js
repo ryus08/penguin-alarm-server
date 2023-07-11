@@ -10,8 +10,8 @@ AWS.config.setPromisesDependency(P);
 
 const db = new AWS.DynamoDB.DocumentClient({ region: "eu-west-1" });
 class DynamoClient {
-  constructor(sub) {
-    this.sub = sub;
+  constructor(user) {
+    this.user = user;
   }
 
   getConfigs() {
@@ -65,7 +65,7 @@ class DynamoClient {
         "#sub": "sub"
       },
       ExpressionAttributeValues: {
-        ":sub": this.sub
+        ":sub": this.user.sub
       }
     };
 
@@ -82,8 +82,8 @@ class DynamoClient {
     const params = {
       TableName: "PenguinOpinion",
       Item: {
-        mergeIdSub: `${mergeId}-${this.sub}`,
-        sub: this.sub,
+        mergeIdSub: `${mergeId}-${this.user.sub}`,
+        sub: this.user.sub,
         value: {
           sick,
           configName,

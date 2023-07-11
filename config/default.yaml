@@ -17,3 +17,8 @@ data:
 preferences:
   source: memory
 gitlabUrl: "https://gitlab.com"
+authorization:
+  jwksUri: "https://gitlab.com/oauth/discovery/keys" # If you use gitlab for AuthN, you need to use the id token, as access tokens are completely opaque
+  audience: setToYourApplicationId
+  issuer: "https://gitlab.com"
+  algorithms: ["RS256"]
