@@ -6,7 +6,8 @@ const _groupBy = require("lodash.groupby");
 const db = {
   configs: {},
   opinions: {},
-  preferences: {}
+  preferences: {},
+  gitProviders: {}
 };
 
 class MemoryStore {
@@ -58,12 +59,25 @@ class MemoryStore {
   }
 
   getPreferences() {
-    return P.resolve(db.preferences[this.user.sub]);
+    return P.resolve({
+      ...db.preferences[this.user.sub],
+      gitProvider: (db.gitProviders[this.user.sub] || {}).providerName
+    });
   }
 
   setPreferences(preferences) {
     db.preferences[this.user.sub] = preferences;
     return P.resolve(preferences);
+  }
+
+  setGitProvider(gitProviderConfig) {
+    db.gitProviders[this.user.sub] = gitProviderConfig;
+    return P.resolve(gitProviderConfig);
+  }
+
+  deleteGitProvider() {
+    delete db.gitProviders[this.user.sub];
+    return P.resolve();
   }
 }
 
