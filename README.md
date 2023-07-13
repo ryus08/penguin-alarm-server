@@ -29,3 +29,4 @@ P1
 * Upgrade dependencies.
 * Smoke tests
 * Get the poller to trigger immediately on a new config
+* Add new preferences methods to customizr
