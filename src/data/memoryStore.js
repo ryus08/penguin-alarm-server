@@ -75,6 +75,10 @@ class MemoryStore {
     return P.resolve(gitProviderConfig);
   }
 
+  getGitProvider() {
+    return P.resolve(db.gitProviders[this.user.sub]);
+  }
+
   deleteGitProvider() {
     delete db.gitProviders[this.user.sub];
     return P.resolve();
