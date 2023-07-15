@@ -15,3 +15,5 @@ data:
   source: dynamo
 preferences:
   source: customizr
+authorization:
+  requiredClaims: ["https://claims.cimpress.io/cimpress_internal"]

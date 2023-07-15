@@ -15,9 +15,19 @@ class GitLabClient {
     this.gitlabUrl = `${gitlabUrl}/api/v4/`;
   }
 
-  async groupSearch({ name }) {
+  buildOptions(customOptions = {}) {
+    const options = { ...customOptions };
+    options.headers = options.headers || {};
+    options.headers.Authorization = `Bearer ${this.token}`;
+    return options;
+  }
+
+  async groupSearch({ name, min_access_level = 10 }) {
     const response = await rp(
-      `${this.gitlabUrl}groups/?search=${name}&min_access_level=10&private_token=${this.token}`
+      `${this.gitlabUrl}groups/?search=${
+        name || ""
+      }&min_access_level=${min_access_level}`,
+      this.buildOptions()
     );
 
     return JSON.parse(response);
@@ -27,11 +37,12 @@ class GitLabClient {
     return P.map(
       groupIds,
       (groupId) => {
-        const options = {
+        const options = this.buildOptions({
           method: "GET",
-          uri: `${this.gitlabUrl}groups/${groupId}?private_token=${this.token}`,
-          resolveWithFullResponse: true
-        };
+          uri: `${this.gitlabUrl}groups/${groupId}`,
+          resolveWithFullResponse: true,
+          headers: this.headersWithAuth
+        });
         return this.projectCache.get(options, (opts) => {
           opts.url = opts.uri;
           return P.resolve(rp(opts));
@@ -50,14 +61,15 @@ class GitLabClient {
   }
 
   getGroup({ groupId }) {
-    return rp(
-      `${this.gitlabUrl}groups/${groupId}?private_token=${this.token}`
-    ).then((response) => JSON.parse(response));
+    return rp(`${this.gitlabUrl}groups/${groupId}`, this.buildOptions()).then(
+      (response) => JSON.parse(response)
+    );
   }
 
   addNotes({ merge }) {
     return rp(
-      `${this.gitlabUrl}projects/${merge.project_id}/merge_requests/${merge.iid}/notes?private_token=${this.token}`
+      `${this.gitlabUrl}projects/${merge.project_id}/merge_requests/${merge.iid}/notes`,
+      this.buildOptions()
     ).then((response) => {
       const notes = JSON.parse(response);
       merge.notes = notes;
@@ -72,11 +84,11 @@ class GitLabClient {
     if (!merge.systemComments) {
       merge.systemComments = [];
     }
-    const options = {
+    const options = this.buildOptions({
       method: "GET",
-      url: `${this.gitlabUrl}projects/${merge.project_id}/merge_requests/${merge.iid}/notes?order_by=created_at&page=${pageNumber}&per_page=100&private_token=${this.token}`,
+      url: `${this.gitlabUrl}projects/${merge.project_id}/merge_requests/${merge.iid}/notes?order_by=created_at&page=${pageNumber}&per_page=100`,
       resolveWithFullResponse: true
-    };
+    });
     return rp(options).then((response) => {
       const body = JSON.parse(response.body);
       const comments = _filter(
@@ -103,7 +115,8 @@ class GitLabClient {
     return (
       P.resolve(
         rp(
-          `${this.gitlabUrl}projects/${merge.project_id}/merge_requests/${merge.iid}/changes?private_token=${this.token}`
+          `${this.gitlabUrl}projects/${merge.project_id}/merge_requests/${merge.iid}/changes`,
+          this.buildOptions()
         )
       )
         .tap((response) => {
@@ -130,7 +143,8 @@ class GitLabClient {
 
   addApprovers({ merge }) {
     return rp(
-      `${this.gitlabUrl}projects/${merge.project_id}/merge_requests/${merge.iid}/approvals?private_token=${this.token}`
+      `${this.gitlabUrl}projects/${merge.project_id}/merge_requests/${merge.iid}/approvals`,
+      this.buildOptions()
     ).then((response) => {
       const approvers = JSON.parse(response);
       merge.approvers = approvers;
@@ -159,7 +173,8 @@ class GitLabClient {
 
   getOpenMergeRequests({ projectId, projectName }) {
     return rp(
-      `${this.gitlabUrl}projects/${projectId}/merge_requests?scope=all&state=opened&private_token=${this.token}`
+      `${this.gitlabUrl}projects/${projectId}/merge_requests?scope=all&state=opened`,
+      this.buildOptions()
     )
       .then((response) => JSON.parse(response))
       .then((response) => {
@@ -176,9 +191,8 @@ class GitLabClient {
     return rp(
       `${
         this.gitlabUrl
-      }projects/${projectId}/merge_requests?scope=all&created_after=${d.toJSON()}&private_token=${
-        this.token
-      }`
+      }projects/${projectId}/merge_requests?scope=all&created_after=${d.toJSON()}`,
+      this.buildOptions()
     )
       .then((response) => JSON.parse(response))
       .then((response) => {
@@ -192,7 +206,8 @@ class GitLabClient {
   getMergeRequest({ project_id, iid }) {
     return P.resolve(
       rp(
-        `${this.gitlabUrl}projects/${project_id}/merge_requests/${iid}?private_token=${this.token}`
+        `${this.gitlabUrl}projects/${project_id}/merge_requests/${iid}`,
+        this.buildOptions()
       )
     )
       .then((response) => JSON.parse(response))
@@ -202,10 +217,12 @@ class GitLabClient {
 
   getDeployments({ id, name, avatar_url, web_url, previous }) {
     // first lets see how many deployments there are, which will help us not look where we don't need to
-    return rp({
-      uri: `${this.gitlabUrl}projects/${id}/deployments?private_token=${this.token}`,
-      method: "HEAD"
-    })
+    return rp(
+      this.buildOptions({
+        uri: `${this.gitlabUrl}projects/${id}/deployments`,
+        method: "HEAD"
+      })
+    )
       .then((response) => {
         // if the current total matches what we already know, then we don't need to do anything else
         const total = parseInt(response["x-total"], 10);
@@ -222,7 +239,8 @@ class GitLabClient {
           );
         }
         return rp(
-          `${this.gitlabUrl}projects/${id}/deployments?private_token=${this.token}&sort=desc&per_page=50&order_by=created_at`
+          `${this.gitlabUrl}projects/${id}/deployments?sort=desc&per_page=50&order_by=created_at`,
+          this.buildOptions()
         ).then((resp) => ({
           total,
           id,

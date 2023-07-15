@@ -9,9 +9,10 @@ const achievements = require("../reducers/achievements");
 const trends = require("../reducers/trends");
 const projectEffort = require("../reducers/projecteffort");
 const userMergeQuery = require("../reducers/usermergequery");
+const { ensureUserCanAccessConfig } = require("../middleware/authorization");
 
 const service = ({ app }) => {
-  app.get("/:configName/merges", (req, res) => {
+  app.get("/:configName/merges", ensureUserCanAccessConfig(), (req, res) => {
     const merges = res.locals.getMerges();
     const config = res.locals.getTeamConfig();
     const includeWorkInProgress = _get(
@@ -22,64 +23,100 @@ const service = ({ app }) => {
     res.status(200).json(mergeQuery({ merges, includeWorkInProgress }));
   });
 
-  app.get("/:configName/merges/users/:gitlabUsername", (req, res) => {
-    const merges = res.locals.getMerges();
-    const config = res.locals.getTeamConfig();
-    const includeWorkInProgress = _get(
-      config,
-      "gitlab.includeWorkInProgressMergeRequests"
-    );
+  app.get(
+    "/:configName/merges/users/:gitlabUsername",
+    ensureUserCanAccessConfig(),
+    (req, res) => {
+      const merges = res.locals.getMerges();
+      const config = res.locals.getTeamConfig();
+      const includeWorkInProgress = _get(
+        config,
+        "gitlab.includeWorkInProgressMergeRequests"
+      );
 
-    res.status(200).json(
-      userMergeQuery({
-        merges,
-        username: req.params.gitlabUsername,
-        includeWorkInProgress
-      })
-    );
-  });
+      res.status(200).json(
+        userMergeQuery({
+          merges,
+          username: req.params.gitlabUsername,
+          includeWorkInProgress
+        })
+      );
+    }
+  );
 
-  app.get("/:configName/deploymenthistory", (req, res) => {
-    const deployments = res.locals.getDeployments();
-    res.status(200).json(deploymentHistory({ deployments }));
-  });
+  app.get(
+    "/:configName/deploymenthistory",
+    ensureUserCanAccessConfig(),
+    (req, res) => {
+      const deployments = res.locals.getDeployments();
+      res.status(200).json(deploymentHistory({ deployments }));
+    }
+  );
 
-  app.get("/:configName/activity/comments", (req, res) => {
-    const merges = res.locals.getMerges();
-    res.status(200).json(activityQuery({ merges, type: "comments" }));
-  });
+  app.get(
+    "/:configName/activity/comments",
+    ensureUserCanAccessConfig(),
+    (req, res) => {
+      const merges = res.locals.getMerges();
+      res.status(200).json(activityQuery({ merges, type: "comments" }));
+    }
+  );
 
-  app.get("/:configName/projectEffort", (req, res) => {
-    const merges = res.locals.getMerges();
-    res.status(200).json(projectEffort({ merges }));
-  });
+  app.get(
+    "/:configName/projectEffort",
+    ensureUserCanAccessConfig(),
+    (req, res) => {
+      const merges = res.locals.getMerges();
+      res.status(200).json(projectEffort({ merges }));
+    }
+  );
 
-  app.get("/:configName/activity/team", (req, res) => {
-    const merges = res.locals.getMerges();
-    res.status(200).json(trends({ merges }));
-  });
+  app.get(
+    "/:configName/activity/team",
+    ensureUserCanAccessConfig(),
+    (req, res) => {
+      const merges = res.locals.getMerges();
+      res.status(200).json(trends({ merges }));
+    }
+  );
 
-  app.get("/:configName/activity/approvals", (req, res) => {
-    const merges = res.locals.getMerges();
-    res.status(200).json(activityQuery({ merges, type: "approvals" }));
-  });
+  app.get(
+    "/:configName/activity/approvals",
+    ensureUserCanAccessConfig(),
+    (req, res) => {
+      const merges = res.locals.getMerges();
+      res.status(200).json(activityQuery({ merges, type: "approvals" }));
+    }
+  );
 
-  app.get("/:configName/achievements", (req, res) => {
-    const merges = res.locals.getMerges();
-    res.status(200).json(achievements({ merges }));
-  });
+  app.get(
+    "/:configName/achievements",
+    ensureUserCanAccessConfig(),
+    (req, res) => {
+      const merges = res.locals.getMerges();
+      res.status(200).json(achievements({ merges }));
+    }
+  );
 
-  app.get("/:configName/activity/merges", (req, res) => {
-    const merges = res.locals.getMerges();
+  app.get(
+    "/:configName/activity/merges",
+    ensureUserCanAccessConfig(),
+    (req, res) => {
+      const merges = res.locals.getMerges();
 
-    res.status(200).json(activityQuery({ merges, type: "merges" }));
-  });
+      res.status(200).json(activityQuery({ merges, type: "merges" }));
+    }
+  );
 
-  app.get("/:configName/deployments", (req, res) => {
-    const allDeployments = res.locals.getDeployments();
+  app.get(
+    "/:configName/deployments",
+    ensureUserCanAccessConfig(),
+    (req, res) => {
+      const allDeployments = res.locals.getDeployments();
 
-    res.status(200).json(deploymentQuery({ allDeployments }));
-  });
+      res.status(200).json(deploymentQuery({ allDeployments }));
+    }
+  );
 };
 
 module.exports = service;
