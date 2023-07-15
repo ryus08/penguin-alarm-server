@@ -1,6 +1,8 @@
 const { unless } = require("express-unless");
 const asyncHandler = require("express-async-handler");
-// const configs = require("../data/configs");
+const configs = require("../data/configs");
+
+const ALL_GROUPS = "*";
 
 class Forbidden extends Error {
   constructor() {
@@ -8,11 +10,53 @@ class Forbidden extends Error {
     this.name = "Forbidden";
   }
 }
+const userCanAccessConfig = (req, config, asMaintainer = false) => {
+  const userGroups = asMaintainer
+    ? req.user.groups_maintainer
+    : req.user.groups_guest;
+
+  return (
+    userGroups.includes(ALL_GROUPS) ||
+    config.gitlab.groupIds.every((groupId) => userGroups.includes(groupId))
+  );
+};
+
 module.exports = {
+  userCanAccessConfig,
+  ensureAdmin: () => {
+    return (req, _res, next) => {
+      if (!req.user.groups_maintainer.includes(ALL_GROUPS)) {
+        throw new Forbidden(
+          `Only apps configured to designate admin users can use this route right now`
+        );
+      }
+      return next();
+    };
+  },
+  ensureUserCanAccessConfig: (asMaintainer = false) => {
+    return (req, _res, next) => {
+      const config = configs.get({ name: req.params.configName });
+      if (
+        (config && !userCanAccessConfig(req, config, asMaintainer)) ||
+        // Consider both the current state and the potentially new state
+        (req.body &&
+          req.body.gitlab &&
+          req.body.gitlab.groupIds &&
+          !userCanAccessConfig(req, req.body, asMaintainer))
+      ) {
+        throw new Forbidden(
+          `User needs ${
+            asMaintainer ? "maintainer" : "guest"
+          } access to all groups in config ${req.params.configName}`
+        );
+      }
+      return next();
+    };
+  },
   getMiddleware: (app) => {
     let middleware;
     if (app.locals.config.authorization.requiredClaims) {
-      middleware = (req, _res, next) => {
+      middleware = (req, res, next) => {
         if (
           !app.locals.config.authorization.requiredClaims.some(
             (x) => req.user[x]
@@ -26,24 +70,25 @@ module.exports = {
         }
         req.user.groups_guest = ["*"];
         req.user.groups_maintainer = ["*"];
+        res.locals.gitLabClient = app.locals.gitlabClient;
         next();
       };
     } else {
       middleware = asyncHandler(async (req, res, next) => {
         req.user.groups_guest = [];
         req.user.groups_maintainer = [];
-        if (res.locals.gitlabClient) {
+        if (res.locals.gitLabClient) {
           try {
             req.user.groups_guest = (
-              await res.locals.gitlabClient.groupSearch({
+              await res.locals.gitLabClient.groupSearch({
                 min_access_level: 10
               })
-            ).map((x) => x.id.toString());
+            ).map((x) => x.id);
             req.user.groups_maintainer = (
-              await res.locals.gitlabClient.groupSearch({
+              await res.locals.gitLabClient.groupSearch({
                 min_access_level: 40
               })
-            ).map((x) => x.id.toString());
+            ).map((x) => x.id);
           } catch (e) {
             app.locals.logger.info(
               "User's git provider registration no longer allows access. Defaulting to the user having no access to any groups, but still access to routes that aren't provider-specific."

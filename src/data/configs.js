@@ -15,6 +15,10 @@ class Configs {
     return _keys(configs);
   }
 
+  getConfigs() {
+    return configs;
+  }
+
   get({ name }) {
     return configs[name];
   }

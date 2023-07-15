@@ -44,7 +44,7 @@ module.exports = ({ app, config, logger }) => {
           },
           logger
         );
-        res.locals.gitlabClient = new GitLabClient({
+        res.locals.gitLabClient = new GitLabClient({
           token: gitProviderConfig.access_token,
           projectCache: userProjectCache,
           gitlabUrl: config.gitlabUrl

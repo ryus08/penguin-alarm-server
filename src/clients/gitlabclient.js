@@ -16,14 +16,17 @@ class GitLabClient {
   }
 
   buildOptions(customOptions = {}) {
-    const options = { headers: {}, ...customOptions };
+    const options = { ...customOptions };
+    options.headers = options.headers || {};
     options.headers.Authorization = `Bearer ${this.token}`;
     return options;
   }
 
   async groupSearch({ name, min_access_level = 10 }) {
     const response = await rp(
-      `${this.gitlabUrl}groups/?search=${name}&min_access_level=${min_access_level}`,
+      `${this.gitlabUrl}groups/?search=${
+        name || ""
+      }&min_access_level=${min_access_level}`,
       this.buildOptions()
     );
 
