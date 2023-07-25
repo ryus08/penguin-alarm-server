@@ -1,6 +1,26 @@
 # Penguin
 A server which aggregates and caches git-provider (currently just Gitlab) information
 
+## Running
+
+This app runs on Nodejs 16.x. If you have that installed, `npm install` will download dependencies and `npm start` will start the development server.
+
+### Running with docker
+
+A docker image is published to ryus08/penguin-alarm-server. You can run this with `docker run ryus08/penguin-alarm-server`. 
+
+## Configuring
+
+This app uses the [node-config](https://github.com/node-config/node-config/wiki) library for configuration. You can set the environment variables specified in [./config/custom-environment-variables.yaml](./config/custom-environment-variables.yaml) to set the config values those correlate to. You can also add your own config files, such as local.yaml if you are running locally and don't want your config (especially secrets) checked in. If something doesn't have an environment variable override in custom-environment-variables.yaml, this is also a good way to configure your app. For example, if you have a config file called `local-production.yaml` (for usage when `NODE_ENV`=`production`), you could build your own docker image with this copied into the config directory with a Dockerfile as:
+
+```
+FROM ryus08/penguin-alarm-server 
+
+COPY ./local-production.yaml ./config/local-production.yaml
+```
+
+Then when you run your new docker image with NODE_ENV=production, your config file will be picked up in addition to the defaults baked into the `penguin-alarm-server `image
+
 ## TODO
 
 P0
