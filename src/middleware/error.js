@@ -8,8 +8,8 @@ module.exports = ({ app }) => {
     } else if (err.name === "Forbidden") {
       res.status(403).send("Forbidden");
     } else {
-      // TODO, better top level error handler
-      next(err);
+      app.locals.logger.error(err);
+      res.status(500).send("An unexpected error occurred");
     }
   });
 };

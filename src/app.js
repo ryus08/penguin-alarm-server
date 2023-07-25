@@ -25,7 +25,7 @@ const app = express();
 
 if (require.main === module) {
   app.locals.config = config;
-  app.use(cors());
+  app.use(cors(config.cors));
   app.use(express.json());
   logger({ app, config });
   app.use(authentication.getMiddleware(app).unless({ path: health.paths }));

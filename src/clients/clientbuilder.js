@@ -21,7 +21,8 @@ module.exports = ({ app, config, logger }) => {
   app.locals.gitLabClient = new GitLabClient({
     token: config.gitlabToken,
     projectCache,
-    gitlabUrl: config.gitlabUrl
+    gitlabUrl: config.gitlabUrl,
+    config: app.locals.config.client
   });
 
   app.use(
@@ -47,7 +48,8 @@ module.exports = ({ app, config, logger }) => {
         res.locals.gitLabClient = new GitLabClient({
           token: gitProviderConfig.access_token,
           projectCache: userProjectCache,
-          gitlabUrl: config.gitlabUrl
+          gitlabUrl: config.gitlabUrl,
+          config: app.locals.config.client
         });
       }
       next();

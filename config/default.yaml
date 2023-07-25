@@ -10,10 +10,12 @@ logging:
 # swagger:
 #   enableValidation: true
 #   enableRedirectRoot: true
-# cors:
-#   origin: "*"
+cors:
+  origin: "*"
 data:
   source: memory
+client:
+  timeout: 3s
 preferences:
   source: memory
 gitlabUrl: "https://gitlab.com"

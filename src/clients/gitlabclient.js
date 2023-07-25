@@ -9,14 +9,15 @@ const _forEach = require("lodash.foreach");
 const _get = require("lodash.get");
 
 class GitLabClient {
-  constructor({ token, projectCache, gitlabUrl }) {
+  constructor({ token, projectCache, gitlabUrl, config }) {
     this.token = token;
     this.projectCache = projectCache;
     this.gitlabUrl = `${gitlabUrl}/api/v4/`;
+    this.timeout = config.timeout;
   }
 
   buildOptions(customOptions = {}) {
-    const options = { ...customOptions };
+    const options = { timeout: this.timeout, ...customOptions };
     options.headers = options.headers || {};
     options.headers.Authorization = `Bearer ${this.token}`;
     return options;
