@@ -41,9 +41,6 @@ Significant effort
 
 P0.1
 
-Significant effort 
-* Add AuthZ ACL caching, otherwise we'll make 2 git provider calls on every route
-
 Some effort
 * Durable but non-dynamo repository. Local disk would probably be good enough
 * More gracefully skip newrelic
@@ -51,7 +48,13 @@ Some effort
 
 P1
 
+Significant effort 
+* Add AuthZ ACL caching, otherwise we'll make 2 git provider calls on every route
+
+Some Effort:
 * Refresh git provider tokens
+
+Uncategorized
 * Load gitlab username from the user's registered token
 * More AuthZ testing, even if just manual
 * Use a representative user's token instead of configured god token in the poller. Maybe just set it up as the config "owner"

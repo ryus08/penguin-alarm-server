@@ -1,5 +1,8 @@
 module.exports = ({ app }) => {
-  app.use((err, req, res) => {
+  // Need this signature with 4 parameters for this to be picked up as an error handler by express,
+  // Even if next() isn't used
+  // eslint-disable-next-line no-unused-vars
+  app.use((err, req, res, next) => {
     if (
       err.name === "UnauthorizedError" ||
       err.name === "SigningKeyNotFoundError"
