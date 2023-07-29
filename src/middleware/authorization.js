@@ -56,27 +56,30 @@ module.exports = {
   getMiddleware: (app) => {
     let middleware;
     if (app.locals.config.authorization.requiredClaims) {
-      middleware = (req, res, next) => {
+      // Need this as async because we use unless
+      middleware = async (req, res, next) => {
+        const requiredClaims = Object.keys(
+          app.locals.config.authorization.requiredClaims
+        );
         if (
-          !Object.keys(app.locals.config.authorization.requiredClaims).every(
-            (requiredClaim) => {
-              const claimValues = app.locals.config.authorization.requiredClaim;
-              if (!claimValues || !claimValues.length) {
-                return (
-                  req.user[requiredClaim] !== undefined &&
-                  req.user[requiredClaim] !== null
-                );
-              }
-              return claimValues.some(
-                (claimValue) => req.user[requiredClaim] === claimValue
+          !requiredClaims.every((requiredClaim) => {
+            const claimValues =
+              app.locals.config.authorization.requiredClaims[requiredClaim];
+            if (!claimValues || !claimValues.length) {
+              return (
+                req.user[requiredClaim] !== undefined &&
+                req.user[requiredClaim] !== null
               );
             }
-          )
+            return claimValues.some(
+              (claimValue) => req.user[requiredClaim] === claimValue
+            );
+          })
         ) {
           throw new Forbidden(
-            `User needs one claim of ${app.locals.config.authorization.requiredClaims.join(
+            `User needs all claims of ${requiredClaims.join(
               ", "
-            )}`
+            )} set to an accepted value`
           );
         }
         req.user.groups_guest = ["*"];
@@ -109,6 +112,10 @@ module.exports = {
         next();
       });
     }
+    // unless.() is async, so our middleware becomes async
+    // Without express5 + this fix: https://github.com/jfromaniello/express-unless/pull/32
+    // we need to treat it as async ourselves and catch anything
+    middleware = asyncHandler(middleware);
     middleware.unless = unless;
     return middleware;
   }
