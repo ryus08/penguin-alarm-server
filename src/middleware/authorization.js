@@ -58,8 +58,19 @@ module.exports = {
     if (app.locals.config.authorization.requiredClaims) {
       middleware = (req, res, next) => {
         if (
-          !app.locals.config.authorization.requiredClaims.some(
-            (x) => req.user[x]
+          !Object.keys(app.locals.config.authorization.requiredClaims).every(
+            (requiredClaim) => {
+              const claimValues = app.locals.config.authorization.requiredClaim;
+              if (!claimValues || !claimValues.length) {
+                return (
+                  req.user[requiredClaim] !== undefined &&
+                  req.user[requiredClaim] !== null
+                );
+              }
+              return claimValues.some(
+                (claimValue) => req.user[requiredClaim] === claimValue
+              );
+            }
           )
         ) {
           throw new Forbidden(

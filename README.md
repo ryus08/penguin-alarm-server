@@ -28,7 +28,9 @@ See the files in the config directory for config options. Specifically, you'll p
 * gitlabToken - A gitlab token to hydrate the local store of gitlab data
 * cors - A config for the [cors](https://github.com/expressjs/cors) package. It allows all origins by default, but you'll probably want to restrict it to wherever you're hosting [the UI](https://github.com/ryus08/pengiun-alarm-ui).
 * authorization - Configuration for your authorization server.
+  * authorization.requiredClaims - Any claims that are required by users to hit this service. This is an object where the keys are required claims and the values are list of valid values for those claims. If the list is empty, the user just needs to have the claim with any value. Since GitProvider AuthZ is not quite usable yet, this is the AuthZ option. See config/cimpress.yaml for an example
 * selfUrl - The URL you're hosting this server at
+
 
 ## TODO
 

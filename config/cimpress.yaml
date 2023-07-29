@@ -16,4 +16,5 @@ data:
 preferences:
   source: customizr
 authorization:
-  requiredClaims: ["https://claims.cimpress.io/cimpress_internal"]
+  requiredClaims: 
+    "https://claims.cimpress.io/cimpress_internal": []
