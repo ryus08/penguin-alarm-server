@@ -1,5 +1,5 @@
 module.exports = ({ app }) => {
-  app.use((err, req, res, next) => {
+  app.use((err, req, res) => {
     if (
       err.name === "UnauthorizedError" ||
       err.name === "SigningKeyNotFoundError"
@@ -8,8 +8,8 @@ module.exports = ({ app }) => {
     } else if (err.name === "Forbidden") {
       res.status(403).send("Forbidden");
     } else {
-      // TODO, better top level error handler
-      next(err);
+      app.locals.logger.error(err);
+      res.status(500).send("An unexpected error occurred");
     }
   });
 };

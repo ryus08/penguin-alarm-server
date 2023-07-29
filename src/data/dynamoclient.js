@@ -95,6 +95,64 @@ class DynamoClient {
     };
     return db.put(params).promise();
   }
+
+  getPreferences() {
+    const params = {
+      TableName: "PenguinPreferences",
+      Key: {
+        userId: this.user.sub
+      }
+    };
+    return db
+      .getItem(params)
+      .promise()
+      .then((result) => result.Item);
+  }
+
+  setPreferences(preferences) {
+    const params = {
+      TableName: "PenguinPreferences",
+      Item: {
+        userId: this.user.sub,
+        preferences
+      }
+    };
+    return db.put(params).promise();
+  }
+
+  setGitProvider(gitProviderConfig) {
+    const params = {
+      TableName: "PenguinGitProviderRegistration",
+      Item: {
+        userId: this.user.sub,
+        gitProviderConfig
+      }
+    };
+    return db.put(params).promise();
+  }
+
+  getGitProvider() {
+    const params = {
+      TableName: "PenguinGitProviderRegistration",
+      Key: {
+        userId: this.user.sub
+      }
+    };
+    return db
+      .getItem(params)
+      .promise()
+      .then((result) => result.Item);
+  }
+
+  deleteGitProvider() {
+    const params = {
+      TableName: "PenguinGitProviderRegistration",
+      Key: {
+        userId: this.user.sub
+      }
+    };
+    return db.delete(params).promise();
+  }
 }
 
 module.exports = DynamoClient;

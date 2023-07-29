@@ -21,32 +21,35 @@ COPY ./local-production.yaml ./config/local-production.yaml
 
 Then when you run your new docker image with NODE_ENV=production, your config file will be picked up in addition to the defaults baked into the `penguin-alarm-server `image
 
+### Config options
+
+See the files in the config directory for config options. Specifically, you'll probably want to set at least the following:
+
+* gitlabToken - A gitlab token to hydrate the local store of gitlab data
+* cors - A config for the [cors](https://github.com/expressjs/cors) package. It allows all origins by default, but you'll probably want to restrict it to wherever you're hosting [the UI](https://github.com/ryus08/pengiun-alarm-ui).
+* authorization - Configuration for your authorization server.
+* selfUrl - The URL you're hosting this server at
+
 ## TODO
 
 P0
 
 Significant effort 
 * Use a real cache in ./src/clients/clientbuilder
-* publish docker image
-
-Some effort
-* Durable but non-dynamo repository. Local disk would probably be good enough
-* Refresh git provider tokens
-
-Minimal effort
-* Set rp timeouts higher
-* CORS
-* error handling, was @cimpress-technology/belterrorhandling
-* New dbs, add to dynamo
 
 P0.1
 
+Significant effort 
 * Add AuthZ ACL caching, otherwise we'll make 2 git provider calls on every route
+
+Some effort
+* Durable but non-dynamo repository. Local disk would probably be good enough
 * More gracefully skip newrelic
 * More gracefully skip AWS ML
 
 P1
 
+* Refresh git provider tokens
 * Load gitlab username from the user's registered token
 * More AuthZ testing, even if just manual
 * Use a representative user's token instead of configured god token in the poller. Maybe just set it up as the config "owner"
