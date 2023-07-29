@@ -1,5 +1,5 @@
 module.exports = ({ app }) => {
-  app.use((err, req, res, next) => {
+  app.use((err, req, res) => {
     if (
       err.name === "UnauthorizedError" ||
       err.name === "SigningKeyNotFoundError"
