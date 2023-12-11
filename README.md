@@ -1,3 +1,5 @@
+> **_NOTE:_** Moved to https://github.com/mindha-us/penguin-alarm-server
+
 # Penguin
 A server which aggregates and caches git-provider (currently just Gitlab) information
 
